@@ -6,7 +6,8 @@
   "homepage": "https://github.com/Dionid/tiamo/tree/master/packages/auth",
   "scripts": {
     "db:intro": "env-cmd -f ./.env_db npx schemats generate -C --config ./src/adapters/dal/schema/schemats.js -o ./src/adapters/dal/schema/db-introspection.ts",
-    "build": "db:intro && rimraf dist && tsc"
+    "build": "db:intro && rimraf dist && tsc",
+    "test": "NODE_PATH=./src jest ./src --config ../../jest.config.js --rootDir ./"
   },
   "author": {
     "name": "David Shekunts",
@@ -26,7 +27,8 @@
   "devDependencies": {
     "@types/uuid": "^8.0.0",
     "env-cmd": "^10.1.0",
-    "schemats": "^3.0.3"
+    "schemats": "^3.0.3",
+    "jest-mock-extended": "github:Dionid/jest-mock-extended"
   },
   "dependencies": {
     "@dddl/common": "^1.0.18",

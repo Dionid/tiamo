@@ -8,6 +8,9 @@ import { User } from "../../../domain/aggregates/user/user.aggregate"
 import { UserRegistered } from "../../events"
 import { UserId } from "../../../domain/aggregates/user/user.id"
 import { USER_REPOSITORY_DI_TOKEN, UserRepository } from "../../../domain/repositories"
+import { InvalidDataErr } from "@dddl/errors"
+
+export const EmailAlreadyTakenError = new InvalidDataErr("Email is already taken")
 
 export class RegisterUserPasswordless
   implements CommandHandler<RegisterUserPasswordlessCommand> {
@@ -16,7 +19,7 @@ export class RegisterUserPasswordless
     @Inject(USER_REPOSITORY_DI_TOKEN) private userRepo: UserRepository,
   ) {}
 
-  async registerNewUser(
+  protected async registerNewUser(
     data: RegisterUserPasswordlessCommand,
     meta: UseCaseReqMeta,
   ): EitherResultP<User> {
@@ -49,7 +52,7 @@ export class RegisterUserPasswordless
     if (!curUser.value) {
       return await this.registerNewUser(data, meta)
     }
-    return Result.ok(curUser.value)
+    return Result.error(EmailAlreadyTakenError)
   }
 
   async handle(req: CommandRequest<RegisterUserPasswordlessCommand>): EitherResultP {
