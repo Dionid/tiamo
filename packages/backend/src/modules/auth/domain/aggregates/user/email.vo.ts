@@ -6,7 +6,7 @@ import { OmitAndModify } from "@dddl/common"
 import {
   AuthUserEmail,
   AuthUserToken,
-} from "../../../adapters/dal/schema/db-introspection"
+} from "applications/common/adapters/dal/schema/db-introspection"
 
 export enum EmailStatus {
   "activating",

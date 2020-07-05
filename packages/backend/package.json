@@ -1,12 +1,12 @@
 {
-  "name": "@tiamo/auth",
-  "version": "1.0.30",
+  "name": "@tiamo/backend",
+  "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
-  "homepage": "https://github.com/Dionid/tiamo/tree/master/packages/auth",
+  "homepage": "https://github.com/Dionid/tiamo/tree/master/packages/backend",
   "scripts": {
-    "db:intro": "env-cmd -f ./.env_db npx schemats generate -C --config ./src/adapters/dal/schema/schemats.js -o ./src/adapters/dal/schema/db-introspection.ts",
-    "build": "db:intro && rimraf dist && tsc",
+    "db:intro": "env-cmd -f ./.env_db npx schemats generate -C --config ./src/applications/common/adapters/dal/schema/schemats.js -o ./src/applications/common/adapters/dal/schema/db-introspection.ts",
+    "build": "npm run db:intro && rimraf dist && tsc",
     "test": "NODE_PATH=./src jest ./src --config ../../jest.config.js --rootDir ./"
   },
   "author": {
@@ -27,8 +27,9 @@
   "devDependencies": {
     "@types/uuid": "^8.0.0",
     "env-cmd": "^10.1.0",
-    "schemats": "^3.0.3",
-    "jest-mock-extended": "github:Dionid/jest-mock-extended"
+    "jest-mock-extended": "github:Dionid/jest-mock-extended",
+    "rimraf": "^3.0.2",
+    "schemats": "^3.0.3"
   },
   "dependencies": {
     "@dddl/common": "^1.0.18",
