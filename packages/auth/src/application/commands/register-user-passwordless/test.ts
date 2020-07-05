@@ -9,7 +9,6 @@ import { Result } from "@dddl/rop"
 import { User } from "../../../domain/aggregates/user/user.aggregate"
 import { UserRegistered } from "../../events"
 import { UserCreated } from "../../../domain/aggregates/user/user.events"
-import { UserId } from "../../../domain/aggregates/user/user.id"
 
 describe("Register User paswordless", function () {
   let userRepo: MockProxy<UserRepository>
