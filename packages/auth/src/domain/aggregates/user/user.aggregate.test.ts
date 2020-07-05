@@ -1,11 +1,11 @@
-import {User} from "./user.aggregate"
-import {UserId} from "./user.id"
-import {v4} from "uuid"
+import { User } from "./user.aggregate"
+import { UserId } from "./user.id"
+import { v4 } from "uuid"
 
 describe("User aggregate", function () {
   describe("with correct email", function () {
     it("should create new User", async function () {
-      const res = await User.createByUser({id: new UserId(v4()), email: "test@mail.ru"})
+      const res = await User.createByUser({ id: new UserId(v4()), email: "test@mail.ru" })
       if (res.isError()) {
         throw res.error
       }
@@ -16,7 +16,7 @@ describe("User aggregate", function () {
 
   describe("with incorrect email", function () {
     it("should return error", async function () {
-      const res = await User.createByUser({id: new UserId(v4()), email: "blablabla"})
+      const res = await User.createByUser({ id: new UserId(v4()), email: "blablabla" })
       if (!res.isError()) {
         throw new Error("must be error")
       }
