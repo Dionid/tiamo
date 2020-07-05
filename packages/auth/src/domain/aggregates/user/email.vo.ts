@@ -23,9 +23,9 @@ export type EmailProps = OmitAndModify<
 
 export class Email extends ValueObject<EmailProps> {
   public static async create(props: {
-    value: string,
-    status: EmailStatus,
-    approved: boolean,
+    value: string
+    status: EmailStatus
+    approved: boolean
   }): EitherResultP<Email, Error[]> {
     const errors: Error[] = []
     const emErr = Joi.string().email().validate(props.value)
