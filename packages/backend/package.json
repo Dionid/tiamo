@@ -28,10 +28,10 @@
   "devDependencies": {
     "@types/uuid": "8.0.0",
     "@types/jest": "26.0.3",
+    "@types/node": "14.0.14",
     "jest-mock-extended": "github:Dionid/jest-mock-extended",
     "ts-jest": "26.1.1",
     "jest": "26.1.0",
-    "@types/node": "14.0.14",
     "env-cmd": "10.1.0",
     "rimraf": "3.0.2",
     "schemats": "3.0.3",
