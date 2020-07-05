@@ -2,6 +2,8 @@ import { ValueObject } from "@dddl/domain"
 import * as Joi from "@hapi/joi"
 import { EitherResultP, Result } from "@dddl/rop"
 import { InvalidDataErr, PublicErr } from "@dddl/errors"
+import {OmitAndModify} from "@dddl/common"
+import {AuthUserEmail, AuthUserToken} from "../../../adapters/dal/schema/db-introspection"
 
 export enum EmailStatus {
   "activating",
@@ -10,19 +12,11 @@ export enum EmailStatus {
   "deactivated",
 }
 
-interface EmailProps {
-  readonly value: string
-  readonly approved: boolean
-  readonly status: EmailStatus
-}
+export type EmailProps = OmitAndModify<AuthUserEmail, { id: any, userId: any }, { status: EmailStatus }>
 
 export class Email extends ValueObject<EmailProps> {
   // Create not approved Email with "activating" status
-  public static async create(props: {
-    value: string
-    approved: boolean
-    status: EmailStatus
-  }): EitherResultP<Email, Error[]> {
+  public static async create(props: EmailProps): EitherResultP<Email, Error[]> {
     const errors: Error[] = []
     const emErr = Joi.string().email().validate(props.value)
     if (emErr.error) {

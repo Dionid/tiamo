@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "homepage": "https://github.com/Dionid/tiamo/tree/master/packages/auth",
   "scripts": {
-    "build": "rimraf dist && tsc"
+    "db:intro": "env-cmd -f ./.env_db npx schemats generate -C --config ./src/adapters/dal/schema/schemats.js -o ./src/adapters/dal/schema/db-introspection.ts",
+    "build": "db:intro && rimraf dist && tsc"
   },
   "author": {
     "name": "David Shekunts",
@@ -23,7 +24,9 @@
   },
   "deprecated": false,
   "devDependencies": {
-    "@types/uuid": "^8.0.0"
+    "@types/uuid": "^8.0.0",
+    "env-cmd": "^10.1.0",
+    "schemats": "^3.0.3"
   },
   "dependencies": {
     "@dddl/common": "^1.0.18",
@@ -31,6 +34,7 @@
     "@dddl/eda": "^1.0.30",
     "@dddl/errors": "^1.0.30",
     "@dddl/rop": "^1.0.30",
+    "@hapi/joi": "^17.1.1",
     "uuid": "^8.2.0"
   }
 }

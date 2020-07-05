@@ -2,18 +2,9 @@ import { ValueObject } from "@dddl/domain"
 import { Maybe, OmitAndModify } from "@dddl/common"
 import { EitherResultP, Result } from "@dddl/rop"
 import { InvalidDataErr, PublicErr } from "@dddl/errors"
+import {AuthUserToken} from "../../../adapters/dal/schema/db-introspection"
 
-// interface TokenProps {
-//     readonly value: string
-//     // Utils
-//     readonly createdAt: Date
-//     readonly updatedAt: Date
-//     // Activation
-//     readonly active: boolean
-//     readonly deactivatedAt: Maybe<Date>
-// }
-
-export type TokenProps = OmitAndModify<AuthUserToken, { id: any }, {}>
+export type TokenProps = OmitAndModify<AuthUserToken, { id: any, userId: any }, {}>
 
 export class Token extends ValueObject<TokenProps> {
   public static async create(props: TokenProps): EitherResultP<Token, Error[]> {
