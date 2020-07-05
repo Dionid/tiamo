@@ -1,0 +1,36 @@
+{
+  "name": "@tiamo/auth",
+  "version": "1.0.30",
+  "description": "",
+  "main": "dist/index.js",
+  "homepage": "https://github.com/Dionid/tiamo/tree/master/packages/auth",
+  "scripts": {
+    "build": "rimraf dist && tsc"
+  },
+  "author": {
+    "name": "David Shekunts",
+    "email": "mail@davidshekunts.com",
+    "url": "https://davidshekunts.com/"
+  },
+  "license": "ISC",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dionid/tiamo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Dionid/tiamo/issues"
+  },
+  "deprecated": false,
+  "devDependencies": {
+    "@types/uuid": "^8.0.0"
+  },
+  "dependencies": {
+    "@dddl/common": "^1.0.18",
+    "@dddl/domain": "^1.0.30",
+    "@dddl/eda": "^1.0.30",
+    "@dddl/errors": "^1.0.30",
+    "@dddl/rop": "^1.0.30",
+    "uuid": "^8.2.0"
+  }
+}
