@@ -2,8 +2,11 @@ import { ValueObject } from "@dddl/domain"
 import * as Joi from "@hapi/joi"
 import { EitherResultP, Result } from "@dddl/rop"
 import { InvalidDataErr, PublicErr } from "@dddl/errors"
-import {OmitAndModify} from "@dddl/common"
-import {AuthUserEmail, AuthUserToken} from "../../../adapters/dal/schema/db-introspection"
+import { OmitAndModify } from "@dddl/common"
+import {
+  AuthUserEmail,
+  AuthUserToken,
+} from "../../../adapters/dal/schema/db-introspection"
 
 export enum EmailStatus {
   "activating",
@@ -12,11 +15,18 @@ export enum EmailStatus {
   "deactivated",
 }
 
-export type EmailProps = OmitAndModify<AuthUserEmail, { id: any, userId: any }, { status: EmailStatus }>
+export type EmailProps = OmitAndModify<
+  AuthUserEmail,
+  { id: any; userId: any },
+  { status: EmailStatus }
+>
 
 export class Email extends ValueObject<EmailProps> {
-  // Create not approved Email with "activating" status
-  public static async create(props: EmailProps): EitherResultP<Email, Error[]> {
+  public static async create(props: {
+    value: string,
+    status: EmailStatus,
+    approved: boolean,
+  }): EitherResultP<Email, Error[]> {
     const errors: Error[] = []
     const emErr = Joi.string().email().validate(props.value)
     if (emErr.error) {
@@ -30,7 +40,11 @@ export class Email extends ValueObject<EmailProps> {
     if (errors.length) {
       return Result.error(errors)
     }
-    const email = new Email(props)
+    const email = new Email({
+      ...props,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
     return Result.ok(email)
   }
 

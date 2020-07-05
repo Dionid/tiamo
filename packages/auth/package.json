@@ -35,6 +35,7 @@
     "@dddl/errors": "^1.0.30",
     "@dddl/rop": "^1.0.30",
     "@hapi/joi": "^17.1.1",
+    "@types/hapi__joi": "^17.1.3",
     "uuid": "^8.2.0"
   }
 }
