@@ -42,6 +42,7 @@ export class User extends AggregateRootWithState<UserId, UserState> {
       approved: false,
     })
     const tokenOrFail = await Token.create({
+      id: v4(),
       value: v4(),
       createdAt: new Date(),
       updatedAt: new Date(),

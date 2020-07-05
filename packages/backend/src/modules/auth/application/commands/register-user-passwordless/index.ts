@@ -7,7 +7,11 @@ import { UseCaseReqMeta } from "@dddl/usecase"
 import { User } from "../../../domain/aggregates/user/user.aggregate"
 import { UserRegistered } from "../../events"
 import { UserId } from "../../../domain/aggregates/user/user.id"
-import { USER_REPOSITORY_DI_TOKEN, UserRepository } from "../../../domain/repositories"
+import {
+  GetUserByActiveEmail,
+  USER_REPOSITORY_DI_TOKEN,
+  UserRepository,
+} from "../../../domain/repositories"
 import { InvalidDataErr } from "@dddl/errors"
 
 export const EmailAlreadyTakenError = new InvalidDataErr("Email is already taken")
@@ -45,7 +49,7 @@ export class RegisterUserPasswordless
     data: RegisterUserPasswordlessCommand,
     meta: UseCaseReqMeta,
   ): EitherResultP<User> {
-    const curUser = await this.userRepo.getByActiveEmail(data.email)
+    const curUser = await this.userRepo.getBySpecs([new GetUserByActiveEmail(data.email)])
     if (curUser.isError()) {
       return Result.error(curUser.error)
     }

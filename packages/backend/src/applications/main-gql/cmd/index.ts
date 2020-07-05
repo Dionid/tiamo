@@ -30,8 +30,11 @@ import {
   ValidateRequestDecorator,
 } from "@dddl/usecase-decorators"
 import { KnexTransactionDecorator } from "@dddl/usecase-decorators-knex"
-import { RegisterUserPasswordlessCommand } from "../../../../dist/modules/auth/application/commands/register-user-passwordless/command"
+import { RegisterUserPasswordlessCommand } from "../../../modules/auth/application/commands/register-user-passwordless/command"
 import { RegisterUserPasswordless } from "../../../modules/auth/application/commands/register-user-passwordless"
+import { UserRepository as IUserRepository } from "../../../modules/auth/domain/repositories"
+import { v4 } from "uuid"
+import { UserRepository } from "../../common/adapters/dal/user-repository"
 
 async function main() {
   // ENV
@@ -97,6 +100,8 @@ async function main() {
     type: TxContainer,
     id: TX_CONTAINER_DI_TOKEN,
   })
+
+  const userRepo: IUserRepository = new UserRepository(v4(), pg, txContainer)
 
   // UseCases
   cqBus.use(LoggerDecorator)

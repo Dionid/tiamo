@@ -7,17 +7,18 @@ import {
   AuthUserEmail,
   AuthUserToken,
 } from "applications/common/adapters/dal/schema/db-introspection"
+import { v4 } from "uuid"
 
 export enum EmailStatus {
-  "activating",
-  "activated",
-  "deactivating",
-  "deactivated",
+  "activating" = "activating",
+  "activated" = "activated",
+  "deactivating" = "deactivating",
+  "deactivated" = "deactivated",
 }
 
 export type EmailProps = OmitAndModify<
   AuthUserEmail,
-  { id: any; userId: any },
+  { userId: any },
   { status: EmailStatus }
 >
 
@@ -26,6 +27,7 @@ export class Email extends ValueObject<EmailProps> {
     value: string
     status: EmailStatus
     approved: boolean
+    id?: string
   }): EitherResultP<Email, Error[]> {
     const errors: Error[] = []
     const emErr = Joi.string().email().validate(props.value)
@@ -44,6 +46,7 @@ export class Email extends ValueObject<EmailProps> {
       ...props,
       createdAt: new Date(),
       updatedAt: new Date(),
+      id: props.id || v4(),
     })
     return Result.ok(email)
   }
