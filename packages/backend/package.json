@@ -6,7 +6,7 @@
   "homepage": "https://github.com/Dionid/tiamo/tree/master/packages/backend",
   "scripts": {
     "test:clearCache": "jest --clearCache",
-    "test": "npm run test:clearCache && NODE_PATH=./src jest ./src --config ../../jest.config.js --rootDir ./",
+    "test": "npm run test:clearCache && NODE_PATH=./src jest ./src --config ./jest.config.js --rootDir ./",
     "db:intro": "env-cmd -f ./.env_db npx schemats generate -C --config ./src/applications/common/adapters/dal/schema/schemats.js -o ./src/applications/common/adapters/dal/schema/db-introspection.ts",
     "build": "npm run db:intro && rimraf dist && tsc"
   },
