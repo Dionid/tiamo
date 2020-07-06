@@ -1,0 +1,17 @@
+
+type Query {
+    dummy: String
+}
+
+type MutationResponse {
+    success: Boolean!
+    message: String
+}
+
+input RegisterUserInput {
+    email: String!
+}
+
+type Mutation {
+    registerUser(req: RegisterUserInput): MutationResponse
+}
