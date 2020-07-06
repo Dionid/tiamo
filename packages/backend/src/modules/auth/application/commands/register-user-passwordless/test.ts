@@ -1,4 +1,4 @@
-import { UserRepository } from "../../../domain/repositories"
+import { GetUserByActiveEmail, UserRepository } from "../../../domain/repositories"
 import { any, Matcher, mock, MockProxy } from "jest-mock-extended"
 import { DSEvent, EventBus } from "@dddl/eda"
 import { EmailAlreadyTakenError, RegisterUserPasswordless } from "./index"
@@ -9,11 +9,18 @@ import { Result } from "@dddl/rop"
 import { User } from "../../../domain/aggregates/user/user.aggregate"
 import { UserRegistered } from "../../events"
 import { UserCreated } from "../../../domain/aggregates/user/user.events"
+import { Specification } from "@dddl/dal"
 
 describe("Register User paswordless", function () {
   let userRepo: MockProxy<UserRepository>
   let eventBus: MockProxy<EventBus>
   let uc: RegisterUserPasswordless
+  const getActiveUserByEmailMatcher = (reqEmail: string) =>
+    new Matcher((specs: Specification<User>[] | undefined) => {
+      if (!specs) return false
+      const spec = specs[0]
+      return specs && spec instanceof GetUserByActiveEmail && spec.email === reqEmail
+    })
 
   beforeEach(async () => {
     eventBus = mock<EventBus>()
@@ -31,8 +38,8 @@ describe("Register User paswordless", function () {
         new UseCaseReqMeta({ callerId }),
         {},
       )
-      userRepo.getByActiveEmail
-        .calledWith(reqEmail)
+      userRepo.getBySpecs
+        .calledWith(getActiveUserByEmailMatcher(reqEmail))
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         .mockResolvedValue(Result.ok(new User()))
@@ -41,7 +48,7 @@ describe("Register User paswordless", function () {
         throw new Error("not correct")
       }
       expect(res.error).toBe(EmailAlreadyTakenError)
-      expect(userRepo.getByActiveEmail.mock.calls.length).toEqual(1)
+      expect(userRepo.getBySpecs.mock.calls.length).toEqual(1)
       expect(userRepo.save.mock.calls.length).toEqual(0)
       expect(eventBus.publish.mock.calls.length).toEqual(0)
     })
@@ -57,7 +64,9 @@ describe("Register User paswordless", function () {
         new UseCaseReqMeta({ callerId }),
         {},
       )
-      userRepo.getByActiveEmail.calledWith(reqEmail).mockResolvedValue(Result.oku())
+      userRepo.getBySpecs
+        .calledWith(getActiveUserByEmailMatcher(reqEmail))
+        .mockResolvedValue(Result.oku())
       userRepo.save
         .calledWith(
           new Matcher((user: User) => {
@@ -86,7 +95,7 @@ describe("Register User paswordless", function () {
         throw res.error
       }
       expect(res.value).toBeUndefined()
-      expect(userRepo.getByActiveEmail.mock.calls.length).toEqual(1)
+      expect(userRepo.getBySpecs.mock.calls.length).toEqual(1)
       expect(userRepo.save.mock.calls.length).toEqual(1)
       expect(eventBus.publish.mock.calls.length).toEqual(1)
     })

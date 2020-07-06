@@ -1,7 +1,7 @@
 import { AggregateRootWithState } from "@dddl/domain"
 import { UserId } from "./user.id"
 import { OmitAndModify } from "@dddl/common"
-import { AuthUser } from "../../../adapters/dal/schema/db-introspection"
+import { AuthUser } from "applications/common/adapters/dal/schema/db-introspection"
 import { Token, TokenList } from "./token.vo"
 import { Email, EmailStatus } from "./email.vo"
 import { UserCreated } from "./user.events"
@@ -42,6 +42,7 @@ export class User extends AggregateRootWithState<UserId, UserState> {
       approved: false,
     })
     const tokenOrFail = await Token.create({
+      id: v4(),
       value: v4(),
       createdAt: new Date(),
       updatedAt: new Date(),
