@@ -3,7 +3,7 @@ import { CQBus } from "@dddl/cqrs"
 import { RegisterUserPasswordlessCommand } from "../../../../modules/auth/application/commands/register-user-passwordless/command"
 import { UseCaseReqMeta } from "@dddl/usecase"
 
-interface ResolversCtx {
+export interface ResolversCtx {
   cqBus: CQBus
 }
 

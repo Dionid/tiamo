@@ -8,8 +8,13 @@
     "test:clearCache": "jest --clearCache",
     "test": "npm run test:clearCache && NODE_PATH=./src jest ./src --config ./jest.config.js --rootDir ./",
     "db:intro": "env-cmd -f ./.env_db npx schemats generate -C --config ./src/applications/common/adapters/dal/schema/schemats.js -o ./src/applications/common/adapters/dal/schema/db-introspection.ts",
+    "gqlgen": "graphql-codegen --config codegen.yml",
     "build": "npm run db:intro && rimraf dist && tsc",
-    "gqlgen": "graphql-codegen --config codegen.yml"
+    "gql:cp": "cp -R src/applications/main-gql/adapters/gql/schema.graphql dist/applications/main-gql/adapters/gql/schema.graphql",
+    "gql:build": "npm run gqlgen && npm run build && npm run gql:cp",
+    "gql:dev": "npm run gql:build && NODE_PATH=./dist node dist/applications/main-gql/cmd/index.js",
+    "gql:start": "NODE_PATH=./dist node dist/applications/main-gql/cmd/index.js",
+    "gql:deploy:gcp": "npm run build && gcloud app deploy ./app.gql.yaml"
   },
   "author": {
     "name": "David Shekunts",
@@ -64,8 +69,10 @@
     "class-validator": "0.12.2",
     "dotenv": "8.2.0",
     "graphql": "15.3.0",
+    "graphql-import-node": "0.0.4",
     "graphql-tools": "^6.0.12",
     "knex": "0.21.1",
+    "reflect-metadata": "^0.1.13",
     "typedi": "0.8.0",
     "uuid": "8.2.0",
     "winston": "3.3.3"
