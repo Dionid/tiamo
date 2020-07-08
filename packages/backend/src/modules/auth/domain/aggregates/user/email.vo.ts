@@ -2,12 +2,6 @@ import { ValueObject } from "@dddl/domain"
 import * as Joi from "@hapi/joi"
 import { EitherResultP, Result } from "@dddl/rop"
 import { InvalidDataErr, PublicErr } from "@dddl/errors"
-import { OmitAndModify } from "@dddl/common"
-import {
-  AuthUserEmail,
-  AuthUserToken,
-} from "applications/common/adapters/dal/schema/db-introspection"
-import { v4 } from "uuid"
 
 export enum EmailStatus {
   "activating" = "activating",
@@ -16,11 +10,13 @@ export enum EmailStatus {
   "deactivated" = "deactivated",
 }
 
-export type EmailProps = OmitAndModify<
-  AuthUserEmail,
-  { userId: any },
-  { status: EmailStatus }
->
+export type EmailProps = {
+  createdAt: Date
+  updatedAt: Date
+  value: string
+  status: EmailStatus
+  approved: boolean
+}
 
 export class Email extends ValueObject<EmailProps> {
   public static async __createByRepository(props: EmailProps): EitherResultP<Email> {
@@ -50,8 +46,6 @@ export class Email extends ValueObject<EmailProps> {
       ...props,
       createdAt: new Date(),
       updatedAt: new Date(),
-      testN: 20,
-      id: props.id || v4(),
     })
     return Result.ok(email)
   }

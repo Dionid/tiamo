@@ -72,6 +72,10 @@ async function main() {
   })
   Container.set({ id: KNEX_CONNECTION_DI_TOKEN, value: pg, global: true })
 
+  // pg.on("query", function (...arg: any) {
+  //   console.log("query")
+  // })
+
   // EDA
   const syncEventBusProvider = new EventBusInMemoryProvider(true, logger)
   const asyncEventBusProvider = new EventBusInMemoryProvider(false, logger)
