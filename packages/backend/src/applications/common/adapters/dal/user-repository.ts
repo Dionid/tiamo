@@ -36,7 +36,9 @@ class UserSpecMapper {
     specs.forEach((spec) => {
       if (spec instanceof GetUserByActiveEmail) {
         resultQuery = query.whereRaw(
-          `email_list @> '[{"value": ${JSON.stringify(spec.email)}, "status": ${JSON.stringify(EmailStatus.activated)}}]'`,
+          `email_list @> '[{"value": ${JSON.stringify(
+            spec.email,
+          )}, "status": ${JSON.stringify(EmailStatus.activated)}}]'`,
         )
       }
     })
@@ -140,7 +142,10 @@ export class UserRepository extends KnexRepositoryBase<
 
   async before(model: AuthUserModel): Promise<AuthUserModel> {
     for (const [key, val] of Object.entries(model)) {
-      if (Array.isArray(val) || (typeof val === "object" && val !== null && !(val instanceof Date))) {
+      if (
+        Array.isArray(val) ||
+        (typeof val === "object" && val !== null && !(val instanceof Date))
+      ) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         model[key] = JSON.stringify(val)
