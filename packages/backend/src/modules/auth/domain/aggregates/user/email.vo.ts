@@ -23,6 +23,10 @@ export type EmailProps = OmitAndModify<
 >
 
 export class Email extends ValueObject<EmailProps> {
+  public static async __createByRepository(props: EmailProps): EitherResultP<Email> {
+    return Result.ok(new Email(props))
+  }
+
   public static async create(props: {
     value: string
     status: EmailStatus
@@ -46,6 +50,7 @@ export class Email extends ValueObject<EmailProps> {
       ...props,
       createdAt: new Date(),
       updatedAt: new Date(),
+      testN: 20,
       id: props.id || v4(),
     })
     return Result.ok(email)

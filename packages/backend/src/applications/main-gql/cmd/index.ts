@@ -33,7 +33,10 @@ import {
 import { KnexTransactionDecorator } from "@dddl/usecase-decorators-knex"
 import { RegisterUserPasswordlessCommand } from "../../../modules/auth/application/commands/register-user-passwordless/command"
 import { RegisterUserPasswordless } from "../../../modules/auth/application/commands/register-user-passwordless"
-import { UserRepository as IUserRepository } from "../../../modules/auth/domain/repositories"
+import {
+  USER_REPOSITORY_DI_TOKEN,
+  UserRepository as IUserRepository,
+} from "../../../modules/auth/domain/repositories"
 import { v4 } from "uuid"
 import { UserRepository } from "../../common/adapters/dal/user-repository"
 import { schema } from "../adapters/gql/schema"
@@ -97,6 +100,10 @@ async function main() {
   })
 
   const userRepo: IUserRepository = new UserRepository(v4(), pg, txContainer)
+  Container.set({
+    type: UserRepository,
+    id: USER_REPOSITORY_DI_TOKEN,
+  })
 
   // UseCases
   cqBus.use(LoggerDecorator)

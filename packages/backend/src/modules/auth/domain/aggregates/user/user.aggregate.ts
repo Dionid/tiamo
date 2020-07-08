@@ -15,6 +15,7 @@ export type UserState = OmitAndModify<
   {
     tokenList: TokenList
     emailList: Email[]
+    emails: Email[]
   }
 >
 
@@ -66,6 +67,7 @@ export class User extends AggregateRootWithState<UserId, UserState> {
       deletedAt: null,
       tokenList: tokenListOrFail.value,
       emailList: [emailOrFail.value],
+      emails: [emailOrFail.value],
     }
 
     return User.create(props.id, userProps)

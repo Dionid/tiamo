@@ -31,16 +31,29 @@ class UserSpecMapper {
     query: Knex.QueryBuilder<AuthUserModel>,
     specs: Specification<User>[],
   ): Knex.QueryBuilder<AuthUserModel> {
-    let resultQuery = query
-      .join("auth_user_email", { "auth_user_email.user_id": "user.id" })
-      .join("auth_user_token", { "auth_user_token.user_id": "user.id" })
+    // Add Relations
+    const resultQuery = query
+      .select("*")
+      .select(
+        query.client.raw(
+          "(select json_agg(email) from (select * from auth_user_email where user_id = auth_user.id) as email) as email_list",
+        ),
+      )
+      .select(
+        query.client.raw(
+          "(select json_agg(token) from (select * from auth_user_token where user_id = auth_user.id) as token) as token_list",
+        ),
+      )
+    // .leftJoin("auth_user_email", { "auth_user_email.user_id": "auth_user.id" })
+    // .leftJoin("auth_user_token", { "auth_user_token.user_id": "auth_user.id" })
+    // . Add specs
     specs.forEach((spec) => {
-      if (spec instanceof GetUserByActiveEmail) {
-        resultQuery = query.whereRaw(
-          "auth_user_email.value = ? AND auth_user_email.status = ?",
-          [spec.email, EmailStatus.activated],
-        )
-      }
+      // if (spec instanceof GetUserByActiveEmail) {
+      //   resultQuery = query.whereRaw(
+      //     "auth_user_email.value = ? AND auth_user_email.status = ?",
+      //     [spec.email, EmailStatus.activated],
+      //   )
+      // }
     })
     return resultQuery
   }
@@ -49,13 +62,15 @@ class UserSpecMapper {
 class UserAggregateMapper {
   static async to(model: AuthUserModel): EitherResultP<User> {
     const tokens: Token[] = []
-    for (let i = 0; i < model.tokenList.length; i++) {
-      const token = model.tokenList[i]
-      const tokenRes = await Token.create(token)
-      if (tokenRes.isError()) {
-        return Result.error(tokenRes.error)
+    if (model.tokenList) {
+      for (let i = 0; i < model.tokenList.length; i++) {
+        const token = model.tokenList[i]
+        const tokenRes = await Token.create(token)
+        if (tokenRes.isError()) {
+          return Result.error(tokenRes.error)
+        }
+        tokens.push(tokenRes.value)
       }
-      tokens.push(tokenRes.value)
     }
     const tokenListRes = await TokenList.create(tokens)
     if (tokenListRes.isError()) {
@@ -63,17 +78,24 @@ class UserAggregateMapper {
     }
 
     const emailList: Email[] = []
-    for (let i = 0; i < model.emailList.length; i++) {
-      const email = model.emailList[i]
-      const emailRes = await Email.create({
-        ...email,
-        status: email.status as EmailStatus,
-      })
-      if (emailRes.isError()) {
-        return Result.error(emailRes.error)
-      }
+    if (model.emailList) {
+      for (let i = 0; i < model.emailList.length; i++) {
+        const email = model.emailList[i]
+        const emailRes = await Email.__createByRepository({
+          id: email.id as string,
+          createdAt: new Date(email.createdAt as string),
+          updatedAt: new Date(email.updatedAt as string),
+          testN: email.testN as number,
+          value: email.value as string,
+          approved: email.approved as boolean,
+          status: email.status as EmailStatus,
+        })
+        if (emailRes.isError()) {
+          return Result.error(emailRes.error)
+        }
 
-      emailList.push(emailRes.value)
+        emailList.push(emailRes.value)
+      }
     }
 
     return Result.ok(
@@ -81,6 +103,7 @@ class UserAggregateMapper {
         ...model,
         tokenList: tokenListRes.value,
         emailList: emailList,
+        emails: emailList,
       }),
     )
   }
@@ -97,6 +120,14 @@ class UserAggregateMapper {
       })),
       emailList: aggregate.state.emailList.map((email) => ({
         ...email.props,
+        createdAt: email.props.createdAt + "",
+        updatedAt: email.props.updatedAt + "",
+        userId: aggregate.id.toValue(),
+      })),
+      emails: aggregate.state.emailList.map((email) => ({
+        ...email.props,
+        createdAt: email.props.createdAt + "",
+        updatedAt: email.props.updatedAt + "",
         userId: aggregate.id.toValue(),
       })),
     })
