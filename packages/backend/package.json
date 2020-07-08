@@ -31,6 +31,13 @@
     "url": "https://github.com/Dionid/tiamo/issues"
   },
   "deprecated": false,
+  "mikro-orm": {
+    "useTsNode": true,
+    "configPaths": [
+      "./src/mikro-orm.config.ts",
+      "./dist/mikro-orm.config.js"
+    ]
+  },
   "devDependencies": {
     "@graphql-codegen/cli": "1.16.3",
     "@graphql-codegen/introspection": "1.16.3",
