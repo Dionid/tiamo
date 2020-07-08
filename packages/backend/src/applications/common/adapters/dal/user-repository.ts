@@ -1,5 +1,4 @@
 import {
-  AggregateMapper,
   KNEX_CONNECTION_DI_TOKEN,
   KnexRepositoryBase,
   TX_CONTAINER_DI_TOKEN,
@@ -31,14 +30,15 @@ class UserSpecMapper {
     query: Knex.QueryBuilder<AuthUserModel>,
     specs: Specification<User>[],
   ): Knex.QueryBuilder<AuthUserModel> {
+    // Add Relations
     let resultQuery = query
-      .join("auth_user_email", { "auth_user_email.user_id": "user.id" })
-      .join("auth_user_token", { "auth_user_token.user_id": "user.id" })
+    // . Add specs
     specs.forEach((spec) => {
       if (spec instanceof GetUserByActiveEmail) {
         resultQuery = query.whereRaw(
-          "auth_user_email.value = ? AND auth_user_email.status = ?",
-          [spec.email, EmailStatus.activated],
+          `email_list @> '[{"value": ${JSON.stringify(
+            spec.email,
+          )}, "status": ${JSON.stringify(EmailStatus.activated)}}]'`,
         )
       }
     })
@@ -48,32 +48,44 @@ class UserSpecMapper {
 
 class UserAggregateMapper {
   static async to(model: AuthUserModel): EitherResultP<User> {
-    const tokens: Token[] = []
-    for (let i = 0; i < model.tokenList.length; i++) {
-      const token = model.tokenList[i]
-      const tokenRes = await Token.create(token)
-      if (tokenRes.isError()) {
-        return Result.error(tokenRes.error)
+    const tokenList: Token[] = []
+    if (model.tokenList) {
+      for (let i = 0; i < model.tokenList.length; i++) {
+        const token = model.tokenList[i]
+        const tokenRes = await Token.create({
+          createdAt: new Date(token.createdAt as string),
+          updatedAt: new Date(token.updatedAt as string),
+          value: token.value as string,
+          active: token.active as boolean,
+          deactivatedAt: new Date(token.deactivatedAt as string),
+        })
+        if (tokenRes.isError()) {
+          return Result.error(tokenRes.error)
+        }
+        tokenList.push(tokenRes.value)
       }
-      tokens.push(tokenRes.value)
     }
-    const tokenListRes = await TokenList.create(tokens)
+    const tokenListRes = await TokenList.create(tokenList)
     if (tokenListRes.isError()) {
       return Result.error(tokenListRes.error)
     }
 
     const emailList: Email[] = []
-    for (let i = 0; i < model.emailList.length; i++) {
-      const email = model.emailList[i]
-      const emailRes = await Email.create({
-        ...email,
-        status: email.status as EmailStatus,
-      })
-      if (emailRes.isError()) {
-        return Result.error(emailRes.error)
+    if (model.emailList) {
+      for (let i = 0; i < model.emailList.length; i++) {
+        const email = model.emailList[i]
+        const emailRes = await Email.__createByRepository({
+          createdAt: new Date(email.createdAt as string),
+          updatedAt: new Date(email.updatedAt as string),
+          value: email.value as string,
+          approved: email.approved as boolean,
+          status: email.status as EmailStatus,
+        })
+        if (emailRes.isError()) {
+          return Result.error(emailRes.error)
+        }
+        emailList.push(emailRes.value)
       }
-
-      emailList.push(emailRes.value)
     }
 
     return Result.ok(
@@ -87,19 +99,22 @@ class UserAggregateMapper {
 
   static async from(aggregate: User): EitherResultP<AuthUserModel> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { ...rest } = aggregate.state
-    return Result.ok({
-      ...rest,
+    const model: AuthUserModel = {
+      ...aggregate.state,
       id: aggregate.id.toValue() + "",
       tokenList: aggregate.state.tokenList.props.map((token) => ({
         ...token.props,
-        userId: aggregate.id.toValue(),
+        createdAt: token.props.createdAt.toJSON(),
+        updatedAt: token.props.updatedAt.toJSON(),
+        deactivatedAt: token.props.deactivatedAt?.toJSON() || null,
       })),
       emailList: aggregate.state.emailList.map((email) => ({
         ...email.props,
-        userId: aggregate.id.toValue(),
+        createdAt: email.props.createdAt.toJSON(),
+        updatedAt: email.props.updatedAt.toJSON(),
       })),
-    })
+    }
+    return Result.ok(model)
   }
 }
 
@@ -123,5 +138,60 @@ export class UserRepository extends KnexRepositoryBase<
       UserAggregateMapper,
       txContainer,
     )
+  }
+
+  async before(model: AuthUserModel): Promise<AuthUserModel> {
+    for (const [key, val] of Object.entries(model)) {
+      if (
+        Array.isArray(val) ||
+        (typeof val === "object" && val !== null && !(val instanceof Date))
+      ) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        model[key] = JSON.stringify(val)
+      }
+    }
+    return model
+  }
+
+  async beforeUpdate(model: AuthUserModel): Promise<AuthUserModel> {
+    return this.before(model)
+  }
+
+  async beforeCreate(model: AuthUserModel): Promise<AuthUserModel> {
+    return this.before(model)
+  }
+
+  async update(aggregate: User): EitherResultP {
+    try {
+      const modelRes = await this.aggregateMapper.from(aggregate)
+      if (modelRes.isError()) {
+        return Result.error(modelRes.error)
+      }
+      const model = await this.beforeUpdate(modelRes.value)
+      await this.executer(this.tableName)
+        .where({
+          [this.pkName]: aggregate.getStringId(),
+        })
+        .update(model)
+      return Result.oku()
+    } catch (e) {
+      return Result.error(e)
+    }
+  }
+
+  async create(aggregate: User): EitherResultP {
+    try {
+      const modelRes = await this.aggregateMapper.from(aggregate)
+      if (modelRes.isError()) {
+        return Result.error(modelRes.error)
+      }
+      const model = await this.beforeCreate(modelRes.value)
+      await this.executer(this.tableName).insert(model)
+      aggregate.isTransient = false
+      return Result.oku()
+    } catch (e) {
+      return Result.error(e)
+    }
   }
 }

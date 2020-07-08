@@ -1,5 +1,6 @@
 import "reflect-metadata"
 import { Container } from "typedi"
+import { ApolloServer } from "apollo-server"
 import * as winston from "winston"
 import dotenv from "dotenv"
 import { format } from "winston"
@@ -32,9 +33,14 @@ import {
 import { KnexTransactionDecorator } from "@dddl/usecase-decorators-knex"
 import { RegisterUserPasswordlessCommand } from "../../../modules/auth/application/commands/register-user-passwordless/command"
 import { RegisterUserPasswordless } from "../../../modules/auth/application/commands/register-user-passwordless"
-import { UserRepository as IUserRepository } from "../../../modules/auth/domain/repositories"
+import {
+  USER_REPOSITORY_DI_TOKEN,
+  UserRepository as IUserRepository,
+} from "../../../modules/auth/domain/repositories"
 import { v4 } from "uuid"
 import { UserRepository } from "../../common/adapters/dal/user-repository"
+import { schema } from "../adapters/gql/schema"
+import { ResolversCtx } from "../adapters/gql/resolver-map"
 
 async function main() {
   // ENV
@@ -44,14 +50,6 @@ async function main() {
   const connectionString = process.env.MAIN_DB_CONNECTION_STRING
   if (!connectionString) {
     throw new Error("Env variable 'MAIN_DB_CONNECTION_STRING' is required")
-  }
-  const botId = process.env.BOT_ID
-  if (!botId) {
-    throw new Error("Env variable 'BOT_ID' is required")
-  }
-  const tgAuthToken = process.env.TG_AUTH_TOKEN
-  if (!tgAuthToken) {
-    throw new Error("Env variable 'TG_AUTH_TOKEN' is required")
   }
 
   // Logger
@@ -73,6 +71,10 @@ async function main() {
     ...knexSnakeCaseMappers(),
   })
   Container.set({ id: KNEX_CONNECTION_DI_TOKEN, value: pg, global: true })
+
+  // pg.on("query", function (...arg: any) {
+  //   console.log("query")
+  // })
 
   // EDA
   const syncEventBusProvider = new EventBusInMemoryProvider(true, logger)
@@ -102,6 +104,10 @@ async function main() {
   })
 
   const userRepo: IUserRepository = new UserRepository(v4(), pg, txContainer)
+  Container.set({
+    type: UserRepository,
+    id: USER_REPOSITORY_DI_TOKEN,
+  })
 
   // UseCases
   cqBus.use(LoggerDecorator)
@@ -113,6 +119,21 @@ async function main() {
   cqBus.use(SyncEventBusProviderTransactionDecorator)
 
   cqBus.subscribe(RegisterUserPasswordlessCommand, RegisterUserPasswordless)
+
+  const server = new ApolloServer({
+    schema,
+    context: async ({ req }): Promise<ResolversCtx> => {
+      return {
+        cqBus,
+      }
+    },
+    introspection: true,
+    playground: true,
+  })
+
+  server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
+    console.log(`🚀  NEW Server ready at ${url}`)
+  })
 }
 
 main()

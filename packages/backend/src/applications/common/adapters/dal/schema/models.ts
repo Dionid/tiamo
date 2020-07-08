@@ -1,6 +1,6 @@
-import { AuthUser, AuthUserEmail, AuthUserToken } from "./db-introspection"
+import { AuthUser } from "./db-introspection"
 
 export interface AuthUserModel extends AuthUser {
-  tokenList: AuthUserToken[]
-  emailList: AuthUserEmail[]
+  tokenList: Record<string, string | number | boolean | null>[]
+  emailList: Record<string, string | number | boolean | null>[]
 }
