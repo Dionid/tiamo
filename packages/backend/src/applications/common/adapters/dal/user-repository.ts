@@ -99,8 +99,9 @@ class UserAggregateMapper {
 
   static async from(aggregate: User): EitherResultP<AuthUserModel> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { tokenList, emailList, ...rest } = aggregate.state
     const model: AuthUserModel = {
-      ...aggregate.state,
+      ...rest,
       id: aggregate.id.toValue() + "",
       tokenList: aggregate.state.tokenList.props.map((token) => ({
         ...token.props,
