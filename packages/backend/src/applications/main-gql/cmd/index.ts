@@ -38,9 +38,9 @@ import {
   UserRepository as IUserRepository,
 } from "../../../modules/auth/domain/repositories"
 import { v4 } from "uuid"
-import { UserRepository } from "../../common/adapters/dal/user-repository"
 import { schema } from "../adapters/gql/schema"
 import { ResolversCtx } from "../adapters/gql/resolver-map"
+import { UserORepository } from "../../common/adapters/dal/user-repository"
 
 async function main() {
   // ENV
@@ -103,9 +103,9 @@ async function main() {
     id: TX_CONTAINER_DI_TOKEN,
   })
 
-  const userRepo: IUserRepository = new UserRepository(v4(), pg, txContainer)
+  const userRepo: IUserRepository = new UserORepository(v4(), pg, txContainer)
   Container.set({
-    type: UserRepository,
+    type: UserORepository,
     id: USER_REPOSITORY_DI_TOKEN,
   })
 

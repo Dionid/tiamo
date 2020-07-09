@@ -79,6 +79,7 @@
     "graphql-import-node": "0.0.4",
     "graphql-tools": "6.0.12",
     "knex": "0.21.1",
+    "objection": "^2.2.1",
     "reflect-metadata": "0.1.13",
     "typedi": "0.8.0",
     "uuid": "8.2.0",
