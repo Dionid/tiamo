@@ -129,6 +129,7 @@ export class UserRepository extends KnexRepositoryBase<
     id: string,
     @Inject(KNEX_CONNECTION_DI_TOKEN) knex: Knex,
     @Inject(TX_CONTAINER_DI_TOKEN) txContainer: TxContainer,
+    protected jsonColNames = ["emailList", "tokenList"],
   ) {
     super(
       id || v4(),
@@ -143,10 +144,7 @@ export class UserRepository extends KnexRepositoryBase<
 
   async before(model: AuthUserModel): Promise<AuthUserModel> {
     for (const [key, val] of Object.entries(model)) {
-      if (
-        Array.isArray(val) ||
-        (typeof val === "object" && val !== null && !(val instanceof Date))
-      ) {
+      if (this.jsonColNames.some((jsonColName) => jsonColName === key)) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         model[key] = JSON.stringify(val)
