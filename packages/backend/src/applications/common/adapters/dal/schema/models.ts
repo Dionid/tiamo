@@ -1,4 +1,4 @@
-import {AuthUser, AuthUserRole} from "./db-introspection"
+import { AuthUser, AuthUserRole } from "./db-introspection"
 import { Model } from "objection"
 
 export interface AuthUserModel extends AuthUser {
