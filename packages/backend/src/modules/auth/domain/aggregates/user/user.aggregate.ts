@@ -1,16 +1,15 @@
 import { AggregateRootWithState } from "@dddl/domain"
 import { UserId } from "./user.id"
 import { OmitAndModify } from "@dddl/common"
-import { AuthUser } from "applications/common/adapters/dal/schema/db-introspection"
 import { Token, TokenList } from "./token.vo"
 import { Email, EmailStatus } from "./email.vo"
 import { UserCreated } from "./user.events"
-import { InvalidDataErr } from "@dddl/errors"
 import { EitherResultP, Result } from "@dddl/rop"
 import { v4 } from "uuid"
+import { AuthUserModel } from "../../../../../applications/common/adapters/dal/schema/models"
 
 export type UserState = OmitAndModify<
-  AuthUser,
+  AuthUserModel,
   { id: any },
   {
     tokenList: TokenList
