@@ -1,5 +1,5 @@
 import { AuthUser } from "./db-introspection"
-import {Model} from "objection"
+import { Model } from "objection"
 
 export interface AuthUserModel extends AuthUser {
   tokenList: Record<string, string | number | boolean | null>[]

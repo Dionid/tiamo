@@ -13,7 +13,7 @@ import {
 import { Inject } from "typedi"
 import { v4 } from "uuid"
 import { Specification } from "@dddl/dal"
-import {AuthUserModel, AuthUserOModel} from "./schema/models"
+import { AuthUserModel, AuthUserOModel } from "./schema/models"
 import {
   Token,
   TokenList,
@@ -25,7 +25,7 @@ import {
 } from "../../../../modules/auth/domain/aggregates/user/email.vo"
 import Knex from "knex"
 import { GetUserByActiveEmail } from "../../../../modules/auth/domain/repositories"
-import {AuthUser} from "./schema/db-introspection"
+import { AuthUser } from "./schema/db-introspection"
 
 class UserSpecMapper {
   static map(
