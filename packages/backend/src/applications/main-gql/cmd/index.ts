@@ -41,6 +41,12 @@ import { v4 } from "uuid"
 import { schema } from "../adapters/gql/schema"
 import { ResolversCtx } from "../adapters/gql/resolver-map"
 import { UserORepository } from "../../common/adapters/dal/user-repository"
+import {MailgunNotificationSender} from "../../../modules/notifications/adapters/mailgun"
+import Mailgun from "mailgun-js"
+import {NOTIFICATION_SENDER_DI_TOKEN} from "../../../modules/notifications/application/notificationservice"
+import {SendRegisterApprovalEmailCommand} from "../../../modules/notifications/application/command/send-register-approval-email/command"
+import {SendRegisterApprovalEmail} from "../../../modules/notifications/application/command/send-register-approval-email"
+import {initOrchestratorService} from "../../../modules/orchestration/export"
 
 async function main() {
   // ENV
@@ -51,7 +57,14 @@ async function main() {
   if (!connectionString) {
     throw new Error("Env variable 'MAIN_DB_CONNECTION_STRING' is required")
   }
-
+  const mailgunApiKey = process.env.MAILGUN_API_KEY
+  if (!mailgunApiKey) {
+    throw new Error("Env variable 'MAILGUN_API_KEY' is required")
+  }
+  const mailgunDomain = process.env.MAILGUN_DOMAIN
+  if (!mailgunDomain) {
+    throw new Error("Env variable 'MAILGUN_DOMAIN' is required")
+  }
   // Logger
   const logger = winston.createLogger({
     format: format.combine(
@@ -79,7 +92,6 @@ async function main() {
   // EDA
   const syncEventBusProvider = new EventBusInMemoryProvider(true, logger)
   const asyncEventBusProvider = new EventBusInMemoryProvider(false, logger)
-  // const eventBus: IEventBus = new EventBus(syncEventBusProvider, asyncEventBusProvider)
   Container.set([
     { id: EVENT_BUS_DI_TOKEN, type: EventBusPublisher },
     {
@@ -109,7 +121,19 @@ async function main() {
     id: USER_REPOSITORY_DI_TOKEN,
   })
 
-  // UseCases
+  // Services
+  const mailgunClient = new Mailgun({
+    apiKey: mailgunApiKey,
+    domain: mailgunDomain,
+  })
+  const mailgunService = new MailgunNotificationSender(mailgunClient, logger)
+  Container.set({
+    value: mailgunService,
+    global: true,
+    id: NOTIFICATION_SENDER_DI_TOKEN,
+  })
+
+  // UseCase Decorators
   cqBus.use(LoggerDecorator)
   cqBus.use(ValidateRequestDecorator)
   cqBus.use(AsyncEventBusProviderSetMetaDecorator)
@@ -118,8 +142,14 @@ async function main() {
   cqBus.use(SyncEventBusProviderSetMetaDecorator)
   cqBus.use(SyncEventBusProviderTransactionDecorator)
 
+  // UseCases
   cqBus.subscribe(RegisterUserPasswordlessCommand, RegisterUserPasswordless)
+  cqBus.subscribe(SendRegisterApprovalEmailCommand, SendRegisterApprovalEmail)
 
+  // Orchestration
+  initOrchestratorService(syncEventBusProvider, asyncEventBusProvider)
+
+  // Server
   const server = new ApolloServer({
     schema,
     context: async ({ req }): Promise<ResolversCtx> => {
@@ -131,6 +161,7 @@ async function main() {
     playground: true,
   })
 
+  // FIRE
   server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
     console.log(`🚀  NEW Server ready at ${url}`)
   })

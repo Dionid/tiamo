@@ -10,7 +10,7 @@ import {
   NOTIFICATION_SENDER_DI_TOKEN,
   NotificationSender,
 } from "../../notificationservice"
-import { CriticalErr, InvalidDataErr, PublicErr } from "@dddl/errors"
+import { CriticalErr } from "@dddl/errors"
 import { GetUserByActivatingEmailAndUserId } from "../../repositories"
 
 export class SendRegisterApprovalEmail
