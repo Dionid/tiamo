@@ -41,12 +41,12 @@ import { v4 } from "uuid"
 import { schema } from "../adapters/gql/schema"
 import { ResolversCtx } from "../adapters/gql/resolver-map"
 import { UserORepository } from "../../common/adapters/dal/user-repository"
-import {MailgunNotificationSender} from "../../../modules/notifications/adapters/mailgun"
+import { MailgunNotificationSender } from "../../../modules/notifications/adapters/mailgun"
 import Mailgun from "mailgun-js"
-import {NOTIFICATION_SENDER_DI_TOKEN} from "../../../modules/notifications/application/notificationservice"
-import {SendRegisterApprovalEmailCommand} from "../../../modules/notifications/application/command/send-register-approval-email/command"
-import {SendRegisterApprovalEmail} from "../../../modules/notifications/application/command/send-register-approval-email"
-import {initOrchestratorService} from "../../../modules/orchestration/export"
+import { NOTIFICATION_SENDER_DI_TOKEN } from "../../../modules/notifications/application/notificationservice"
+import { SendRegisterApprovalEmailCommand } from "../../../modules/notifications/application/command/send-register-approval-email/command"
+import { SendRegisterApprovalEmail } from "../../../modules/notifications/application/command/send-register-approval-email"
+import { initOrchestratorService } from "../../../modules/orchestration/export"
 
 async function main() {
   // ENV
