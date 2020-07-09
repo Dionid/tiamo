@@ -28,6 +28,8 @@ import { GetUserByActiveEmail } from "../../../../modules/auth/domain/repositori
 import { AuthUser } from "./schema/db-introspection"
 import { ObjectionRepositoryBase } from "./objection-repository"
 import { QueryBuilderType } from "objection"
+import { GetUserByActivatingEmailAndUserId } from "../../../../modules/notifications/application/repositories"
+import { CriticalErr } from "@dddl/errors"
 
 class UserSpecMapper {
   static map(
@@ -43,6 +45,18 @@ class UserSpecMapper {
           `email_list @> '[{"value": ${JSON.stringify(
             spec.email,
           )}, "status": ${JSON.stringify(EmailStatus.activated)}}]'`,
+        )
+      } else if (spec instanceof GetUserByActivatingEmailAndUserId) {
+        resultQuery = query
+          .whereRaw(
+            `email_list @> '[{"value": ${JSON.stringify(
+              spec.email,
+            )}, "status": ${JSON.stringify(EmailStatus.activating)}}]'`,
+          )
+          .where({ id: spec.userId.toString() })
+      } else {
+        throw new CriticalErr(
+          `This specification hasn't been done: ${spec.constructor.name}`,
         )
       }
     })

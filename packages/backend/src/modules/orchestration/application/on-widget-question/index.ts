@@ -4,9 +4,13 @@ import { CQ_BUS_DI_TOKEN, CQBus } from "@dddl/cqrs"
 import { EitherResultP } from "@dddl/rop"
 import { UserRegistered } from "../../../auth/application/events"
 import { SendRegisterApprovalEmailCommand } from "../../../notifications/application/command/send-register-approval-email/command"
+import { LOGGER_DI_TOKEN, Logger } from "@dddl/logger"
 
 export class OnUserRegistered extends AsyncEventHandler<UserRegistered, undefined> {
-  constructor(@Inject(CQ_BUS_DI_TOKEN) private cqBus: CQBus) {
+  constructor(
+    @Inject(CQ_BUS_DI_TOKEN) private cqBus: CQBus,
+    @Inject(LOGGER_DI_TOKEN) private logger: Logger,
+  ) {
     super()
   }
 
@@ -16,7 +20,7 @@ export class OnUserRegistered extends AsyncEventHandler<UserRegistered, undefine
       this.metaFromRequest(req),
     )
     if (res.isError()) {
-      console.warn(`Error in OnWidgetQuestionCreatedAsync: ${res.error}`)
+      this.logger.error(res.error)
     }
     return res
   }

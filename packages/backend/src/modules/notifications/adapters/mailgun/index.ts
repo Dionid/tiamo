@@ -11,7 +11,7 @@ export class MailgunNotificationSender {
 
   async sendRegistrationApprovalMail(userEmail: string, token: string): EitherResultP {
     const data = {
-      from: "sandbox3289a080bddc475da83421617626112d.mailgun.org",
+      from: "Excited User <me@samples.mailgun.org>",
       to: `${userEmail}`,
       subject: "Email verification",
       text: `Hi there! We are trying to verify your email ${userEmail}. Get your token: ${token}!`,

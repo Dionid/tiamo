@@ -8,10 +8,12 @@ import { OnUserRegistered } from "./index"
 import { UserRegistered } from "../../../auth/application/events"
 import { UserId } from "../../../auth/domain/aggregates/user/user.id"
 import { SendRegisterApprovalEmailCommand } from "../../../notifications/application/command/send-register-approval-email/command"
+import { Logger } from "@dddl/logger"
 
 describe("OnUserRegistered", function () {
   describe("async", function () {
     let cqBus: MockProxy<CQBus>
+    let logger: MockProxy<Logger>
     let uc: OnUserRegistered
     let event: UserRegistered
     let meta: DSEventMeta
@@ -20,7 +22,8 @@ describe("OnUserRegistered", function () {
 
     beforeEach(async () => {
       cqBus = mock<CQBus>()
-      uc = new OnUserRegistered(cqBus)
+      logger = mock<Logger>()
+      uc = new OnUserRegistered(cqBus, logger)
       userId = v4()
       event = new UserRegistered(new UserId(userId), "test@mail.com")
       const metaOrF = await DSEventMeta.create({ callerId: v4(), transactionId: v4() })
