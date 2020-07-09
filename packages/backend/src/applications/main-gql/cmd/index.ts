@@ -38,10 +38,9 @@ import {
   UserRepository as IUserRepository,
 } from "../../../modules/auth/domain/repositories"
 import { v4 } from "uuid"
-import { UserRepository } from "../../common/adapters/dal/user-repository"
 import { schema } from "../adapters/gql/schema"
 import { ResolversCtx } from "../adapters/gql/resolver-map"
-import { UserORepository } from "../../common/adapters/dal/user-repository-objection"
+import { UserORepository } from "../../common/adapters/dal/user-repository"
 
 async function main() {
   // ENV
