@@ -1,6 +1,7 @@
 import {
   KNEX_CONNECTION_DI_TOKEN,
   KnexRepositoryBase,
+  KnexRepositoryWithJsonColumnsMixin,
   TX_CONTAINER_DI_TOKEN,
   TxContainer,
 } from "@dddl/dal-knex"
@@ -119,12 +120,12 @@ class UserAggregateMapper {
   }
 }
 
-export class UserRepository extends KnexRepositoryBase<
+export class UserRepository extends KnexRepositoryWithJsonColumnsMixin<
   User,
   UserState,
   UserId,
   AuthUserModel
-> {
+>(["emailList", "tokenList"], KnexRepositoryBase) {
   constructor(
     id: string,
     @Inject(KNEX_CONNECTION_DI_TOKEN) knex: Knex,
@@ -139,60 +140,5 @@ export class UserRepository extends KnexRepositoryBase<
       UserAggregateMapper,
       txContainer,
     )
-  }
-
-  async before(model: AuthUserModel): Promise<AuthUserModel> {
-    for (const [key, val] of Object.entries(model)) {
-      if (
-        Array.isArray(val) ||
-        (typeof val === "object" && val !== null && !(val instanceof Date))
-      ) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        model[key] = JSON.stringify(val)
-      }
-    }
-    return model
-  }
-
-  async beforeUpdate(model: AuthUserModel): Promise<AuthUserModel> {
-    return this.before(model)
-  }
-
-  async beforeCreate(model: AuthUserModel): Promise<AuthUserModel> {
-    return this.before(model)
-  }
-
-  async update(aggregate: User): EitherResultP {
-    try {
-      const modelRes = await this.aggregateMapper.from(aggregate)
-      if (modelRes.isError()) {
-        return Result.error(modelRes.error)
-      }
-      const model = await this.beforeUpdate(modelRes.value)
-      await this.executer(this.tableName)
-        .where({
-          [this.pkName]: aggregate.getStringId(),
-        })
-        .update(model)
-      return Result.oku()
-    } catch (e) {
-      return Result.error(e)
-    }
-  }
-
-  async create(aggregate: User): EitherResultP {
-    try {
-      const modelRes = await this.aggregateMapper.from(aggregate)
-      if (modelRes.isError()) {
-        return Result.error(modelRes.error)
-      }
-      const model = await this.beforeCreate(modelRes.value)
-      await this.executer(this.tableName).insert(model)
-      aggregate.isTransient = false
-      return Result.oku()
-    } catch (e) {
-      return Result.error(e)
-    }
   }
 }
