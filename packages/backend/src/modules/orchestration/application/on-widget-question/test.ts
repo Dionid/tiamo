@@ -4,10 +4,10 @@ import { Matcher, mock, MockProxy } from "jest-mock-extended"
 import { Result } from "@dddl/rop"
 import { UseCaseReqMeta } from "@dddl/usecase"
 import { v4 } from "uuid"
-import {OnUserRegistered} from "./index"
-import {UserRegistered} from "../../../auth/application/events"
-import {UserId} from "../../../auth/domain/aggregates/user/user.id"
-import {SendRegisterApprovalEmailCommand} from "../../../notifications/application/command/send-register-approval-email/command"
+import { OnUserRegistered } from "./index"
+import { UserRegistered } from "../../../auth/application/events"
+import { UserId } from "../../../auth/domain/aggregates/user/user.id"
+import { SendRegisterApprovalEmailCommand } from "../../../notifications/application/command/send-register-approval-email/command"
 
 describe("OnUserRegistered", function () {
   describe("async", function () {

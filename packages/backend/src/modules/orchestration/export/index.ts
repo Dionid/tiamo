@@ -1,7 +1,6 @@
-import {EventBusProvider} from "@dddl/eda"
-import {UserRegistered} from "../../auth/application/events"
-import {OnUserRegistered} from "../application/on-widget-question"
-
+import { EventBusProvider } from "@dddl/eda"
+import { UserRegistered } from "../../auth/application/events"
+import { OnUserRegistered } from "../application/on-widget-question"
 
 export function initOrchestratorService(
   syncEventBusProvider: EventBusProvider,

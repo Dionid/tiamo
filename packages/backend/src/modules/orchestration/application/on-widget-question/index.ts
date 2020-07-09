@@ -2,8 +2,8 @@ import { AsyncEventHandler, EventRequest, SyncEventHandler } from "@dddl/eda"
 import { Inject } from "typedi"
 import { CQ_BUS_DI_TOKEN, CQBus } from "@dddl/cqrs"
 import { EitherResultP } from "@dddl/rop"
-import {UserRegistered} from "../../../auth/application/events"
-import {SendRegisterApprovalEmailCommand} from "../../../notifications/application/command/send-register-approval-email/command"
+import { UserRegistered } from "../../../auth/application/events"
+import { SendRegisterApprovalEmailCommand } from "../../../notifications/application/command/send-register-approval-email/command"
 
 export class OnUserRegistered extends AsyncEventHandler<UserRegistered, undefined> {
   constructor(@Inject(CQ_BUS_DI_TOKEN) private cqBus: CQBus) {

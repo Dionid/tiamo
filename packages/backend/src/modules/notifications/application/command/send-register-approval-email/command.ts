@@ -1,7 +1,6 @@
-import {UserId} from "../../../../auth/domain/aggregates/user/user.id"
-import {IsUUID} from "class-validator"
-import {Command} from "@dddl/cqrs"
-
+import { UserId } from "../../../../auth/domain/aggregates/user/user.id"
+import { IsUUID } from "class-validator"
+import { Command } from "@dddl/cqrs"
 
 export class SendRegisterApprovalEmailCommand extends Command {
   @IsUUID()
