@@ -3,7 +3,7 @@ import { UserId } from "../../domain/aggregates/user/user.id"
 import { IntegrationEvent } from "@dddl/eda"
 
 export class UserRegistered extends IntegrationEvent {
-  constructor(public readonly userId: UserId) {
+  constructor(public readonly userId: UserId, public readonly email: string) {
     super(v4())
   }
 }

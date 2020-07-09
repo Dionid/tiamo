@@ -1,12 +1,15 @@
 import { UserId } from "../../../../auth/domain/aggregates/user/user.id"
-import { IsUUID } from "class-validator"
+import { IsEmail, IsNotEmpty, IsUUID } from "class-validator"
 import { Command } from "@dddl/cqrs"
 
 export class SendRegisterApprovalEmailCommand extends Command {
-  @IsUUID()
+  @IsNotEmpty()
   public readonly userId: UserId
-  constructor(userId: UserId) {
+  @IsEmail()
+  public readonly email: string
+  constructor(userId: UserId, email: string) {
     super()
     this.userId = userId
+    this.email = email
   }
 }

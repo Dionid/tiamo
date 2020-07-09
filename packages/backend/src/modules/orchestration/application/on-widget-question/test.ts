@@ -22,7 +22,7 @@ describe("OnUserRegistered", function () {
       cqBus = mock<CQBus>()
       uc = new OnUserRegistered(cqBus)
       userId = v4()
-      event = new UserRegistered(new UserId(userId))
+      event = new UserRegistered(new UserId(userId), "test@mail.com")
       const metaOrF = await DSEventMeta.create({ callerId: v4(), transactionId: v4() })
       if (metaOrF.isError()) {
         throw new Error(metaOrF.error + "")

@@ -69,11 +69,9 @@ export class RegisterUserPasswordless
     }
 
     // . Publish events
-    await this.eventBus.publish([
+    return await this.eventBus.publish([
       ...user.value.domainEvents,
-      new UserRegistered(user.value.id),
+      new UserRegistered(user.value.id, data.email),
     ])
-
-    return Result.oku()
   }
 }

@@ -1,5 +1,4 @@
 import { CommandHandler, CommandRequest } from "@dddl/cqrs"
-import { RegisterUserPasswordlessCommand } from "../../../../auth/application/commands/register-user-passwordless/command"
 import { Inject } from "typedi"
 import {
   USER_REPOSITORY_DI_TOKEN,
@@ -12,15 +11,16 @@ import {
 } from "../../notificationservice"
 import { CriticalErr } from "@dddl/errors"
 import { GetUserByActivatingEmailAndUserId } from "../../repositories"
+import { SendRegisterApprovalEmailCommand } from "./command"
 
 export class SendRegisterApprovalEmail
-  implements CommandHandler<RegisterUserPasswordlessCommand> {
+  implements CommandHandler<SendRegisterApprovalEmailCommand> {
   constructor(
     @Inject(USER_REPOSITORY_DI_TOKEN) private userRepo: UserRepository,
     @Inject(NOTIFICATION_SENDER_DI_TOKEN) private notificationSender: NotificationSender,
   ) {}
 
-  async handle(req: CommandRequest<RegisterUserPasswordlessCommand>): EitherResultP {
+  async handle(req: CommandRequest<SendRegisterApprovalEmailCommand>): EitherResultP {
     const specRes = GetUserByActivatingEmailAndUserId.create(
       req.data.userId,
       req.data.email,

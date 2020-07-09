@@ -12,7 +12,7 @@ export class OnUserRegistered extends AsyncEventHandler<UserRegistered, undefine
 
   async handle(req: EventRequest<UserRegistered>): EitherResultP {
     const res = await this.cqBus.handle<undefined>(
-      new SendRegisterApprovalEmailCommand(req.data.userId),
+      new SendRegisterApprovalEmailCommand(req.data.userId, req.data.email),
       this.metaFromRequest(req),
     )
     if (res.isError()) {
