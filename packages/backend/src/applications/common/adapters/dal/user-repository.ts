@@ -171,7 +171,7 @@ export class UserRepository extends KnexRepositoryWithJsonColumnsMixin<
   }
 
   async getBySpecs(specs: Specification<User>[]): EitherResultP<User | undefined> {
-    let query = AuthUserOModel.query(this.executer).withGraphFetched({ roles: true })
+    let query = AuthUserOModel.query(this.executer)
     specs.forEach((spec) => {
       if (spec instanceof GetUserByActiveEmail) {
         query = query.whereRaw(
