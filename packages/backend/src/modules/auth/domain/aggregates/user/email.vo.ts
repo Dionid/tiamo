@@ -27,7 +27,6 @@ export class Email extends ValueObject<EmailProps> {
     value: string
     status: EmailStatus
     approved: boolean
-    id?: string
   }): EitherResultP<Email, Error[]> {
     const errors: Error[] = []
     const emErr = Joi.string().email().validate(props.value)

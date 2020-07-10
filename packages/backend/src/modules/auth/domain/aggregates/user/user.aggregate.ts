@@ -76,11 +76,11 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     if (!em) {
       return Result.error(new InvalidDataErr(`There is no email like: ${email}`))
     }
-    const activatedEmailRes = await em.activate()
-    if (activatedEmailRes.isError()) {
-      return Result.error(activatedEmailRes.error)
+    const approvedEmailRes = await em.approve()
+    if (approvedEmailRes.isError()) {
+      return Result.error(approvedEmailRes.error)
     }
-    const approvedAndActivatedEmailRes = await activatedEmailRes.value.approve()
+    const approvedAndActivatedEmailRes = await approvedEmailRes.value.activate()
     if (approvedAndActivatedEmailRes.isError()) {
       return Result.error(approvedAndActivatedEmailRes.error)
     }
