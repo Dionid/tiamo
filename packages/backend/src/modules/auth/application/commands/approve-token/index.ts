@@ -9,7 +9,7 @@ import {
   UserRepository,
 } from "../../../domain/repositories"
 import { InvalidDataErr } from "@dddl/core/dist/errors"
-import {UserApprovedEmailByToken} from "../../events"
+import { UserApprovedEmailByToken } from "../../events"
 
 export class ApproveEmailByToken implements CommandHandler<ApproveEmailByTokenCommand> {
   constructor(
