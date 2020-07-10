@@ -1,4 +1,4 @@
-import { DomainEvent } from "@dddl/eda"
+import { DomainEvent } from "@dddl/core/dist/eda"
 import { UserId } from "./user.id"
 import { v4 } from "uuid"
 

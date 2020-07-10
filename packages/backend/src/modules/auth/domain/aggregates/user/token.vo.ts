@@ -1,6 +1,6 @@
-import { ValueObject } from "@dddl/domain"
-import { EitherResultP, Result } from "@dddl/rop"
-import { InvalidDataErr, PublicErr } from "@dddl/errors"
+import { ValueObject } from "@dddl/core/dist/domain"
+import { EitherResultP, Result } from "@dddl/core/dist/rop"
+import { InvalidDataErr, PublicErr } from "@dddl/core/dist/errors"
 
 export interface TokenProps {
   createdAt: Date

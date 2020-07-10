@@ -1,4 +1,4 @@
-import { Command } from "@dddl/cqrs"
+import { Command } from "@dddl/core/dist/cqrs"
 import { IsEmail, IsUUID } from "class-validator"
 
 export class RegisterUserPasswordlessCommand extends Command {

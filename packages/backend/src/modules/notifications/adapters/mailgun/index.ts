@@ -1,6 +1,6 @@
-import { EitherResultP, Result } from "@dddl/rop"
+import { EitherResultP, Result } from "@dddl/core/dist/rop"
 import * as Mailgun from "mailgun-js"
-import { LOGGER_DI_TOKEN, Logger } from "@dddl/logger"
+import { LOGGER_DI_TOKEN, Logger } from "@dddl/core/dist/logger"
 import { Inject } from "typedi"
 
 export class MailgunNotificationSender {
@@ -14,7 +14,7 @@ export class MailgunNotificationSender {
       from: "Excited User <me@samples.mailgun.org>",
       to: `${userEmail}`,
       subject: "Email verification",
-      text: `Hi there! We are trying to verify your email ${userEmail}. Get your token: ${token}!`,
+      text: `Hi there! We are trying to verify your email ${userEmail}. Get your token: ${token}`,
     }
     try {
       const res = await this.client.messages().send(data)

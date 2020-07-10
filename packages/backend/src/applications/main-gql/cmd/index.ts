@@ -4,24 +4,24 @@ import { ApolloServer } from "apollo-server"
 import * as winston from "winston"
 import dotenv from "dotenv"
 import { format } from "winston"
-import { LOGGER_DI_TOKEN } from "@dddl/logger"
+import { LOGGER_DI_TOKEN } from "@dddl/core/dist/logger"
 import knex from "knex"
 import {
   KNEX_CONNECTION_DI_TOKEN,
   knexSnakeCaseMappers,
   TX_CONTAINER_DI_TOKEN,
   TxContainer,
-} from "@dddl/dal-knex"
+} from "@dddl/knex/dist/dal"
 import {
   ASYNC_EVENT_BUS_PROVIDER_DI_TOKEN,
   EVENT_BUS_DI_TOKEN,
   EventBusProvider,
   EventBusPublisher,
   SYNC_EVENT_BUS_PROVIDER_DI_TOKEN,
-} from "@dddl/eda"
-import { CQ_BUS_DI_TOKEN } from "@dddl/cqrs"
-import { EventBusInMemoryProvider } from "@dddl/eda-inmemory"
-import { CQBus } from "@dddl/cqrs-inmemory"
+} from "@dddl/core/dist/eda"
+import { CQ_BUS_DI_TOKEN } from "@dddl/core/dist/cqrs"
+import { EventBusInMemoryProvider } from "@dddl/core/dist/eda-inmemory"
+import { CQBus } from "@dddl/core/dist/cqrs-inmemory"
 import {
   AsyncEventBusProviderSetMetaDecorator,
   AsyncEventBusProviderTransactionDecorator,
@@ -29,8 +29,8 @@ import {
   SyncEventBusProviderSetMetaDecorator,
   SyncEventBusProviderTransactionDecorator,
   ValidateRequestDecorator,
-} from "@dddl/usecase-decorators"
-import { KnexTransactionDecorator } from "@dddl/usecase-decorators-knex"
+} from "@dddl/core/dist/usecase-decorators"
+import { KnexTransactionDecorator } from "@dddl/knex/dist/usecase-decorators"
 import { RegisterUserPasswordlessCommand } from "../../../modules/auth/application/commands/register-user-passwordless/command"
 import { RegisterUserPasswordless } from "../../../modules/auth/application/commands/register-user-passwordless"
 import {
@@ -47,6 +47,8 @@ import { NOTIFICATION_SENDER_DI_TOKEN } from "../../../modules/notifications/app
 import { SendRegisterApprovalEmailCommand } from "../../../modules/notifications/application/command/send-register-approval-email/command"
 import { SendRegisterApprovalEmail } from "../../../modules/notifications/application/command/send-register-approval-email"
 import { initOrchestratorService } from "../../../modules/orchestration/export"
+import { ApproveEmailByToken } from "../../../modules/auth/application/commands/approve-token"
+import { ApproveEmailByTokenCommand } from "../../../modules/auth/application/commands/approve-token/command"
 
 async function main() {
   // ENV
@@ -145,6 +147,7 @@ async function main() {
   // UseCases
   cqBus.subscribe(RegisterUserPasswordlessCommand, RegisterUserPasswordless)
   cqBus.subscribe(SendRegisterApprovalEmailCommand, SendRegisterApprovalEmail)
+  cqBus.subscribe(ApproveEmailByTokenCommand, ApproveEmailByToken)
 
   // Orchestration
   initOrchestratorService(syncEventBusProvider, asyncEventBusProvider)

@@ -1,4 +1,4 @@
-import { EventBusProvider } from "@dddl/eda"
+import { EventBusProvider } from "@dddl/core/dist/eda"
 import { UserRegistered } from "../../auth/application/events"
 import { OnUserRegistered } from "../application/on-widget-question"
 

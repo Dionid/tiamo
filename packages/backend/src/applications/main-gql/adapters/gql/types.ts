@@ -27,13 +27,23 @@ export type RegisterUserInput = {
   email: Scalars["String"]
 }
 
+export type ApproveEmailByTokenInput = {
+  token: Scalars["String"]
+  email: Scalars["String"]
+}
+
 export type Mutation = {
   __typename?: "Mutation"
   registerUser?: Maybe<MutationResponse>
+  approveEmailByToken?: Maybe<MutationResponse>
 }
 
 export type MutationRegisterUserArgs = {
   req?: Maybe<RegisterUserInput>
+}
+
+export type MutationApproveEmailByTokenArgs = {
+  req?: Maybe<ApproveEmailByTokenInput>
 }
 
 export type ResolverTypeWrapper<T> = Promise<T> | T
@@ -133,6 +143,7 @@ export type ResolversTypes = {
   MutationResponse: ResolverTypeWrapper<MutationResponse>
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>
   RegisterUserInput: RegisterUserInput
+  ApproveEmailByTokenInput: ApproveEmailByTokenInput
   Mutation: ResolverTypeWrapper<{}>
 }
 
@@ -143,6 +154,7 @@ export type ResolversParentTypes = {
   MutationResponse: MutationResponse
   Boolean: Scalars["Boolean"]
   RegisterUserInput: RegisterUserInput
+  ApproveEmailByTokenInput: ApproveEmailByTokenInput
   Mutation: {}
 }
 
@@ -171,6 +183,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationRegisterUserArgs, never>
+  >
+  approveEmailByToken?: Resolver<
+    Maybe<ResolversTypes["MutationResponse"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationApproveEmailByTokenArgs, never>
   >
 }
 

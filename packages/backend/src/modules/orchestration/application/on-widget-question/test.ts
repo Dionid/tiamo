@@ -1,14 +1,14 @@
-import { CQBus } from "@dddl/cqrs"
-import { DSEventMeta, EventRequest } from "@dddl/eda"
+import { CQBus } from "@dddl/core/dist/cqrs"
+import { DSEventMeta, EventRequest } from "@dddl/core/dist/eda"
 import { Matcher, mock, MockProxy } from "jest-mock-extended"
-import { Result } from "@dddl/rop"
-import { UseCaseReqMeta } from "@dddl/usecase"
+import { Result } from "@dddl/core/dist/rop"
+import { UseCaseReqMeta } from "@dddl/core/dist/usecase"
 import { v4 } from "uuid"
 import { OnUserRegistered } from "./index"
 import { UserRegistered } from "../../../auth/application/events"
 import { UserId } from "../../../auth/domain/aggregates/user/user.id"
 import { SendRegisterApprovalEmailCommand } from "../../../notifications/application/command/send-register-approval-email/command"
-import { Logger } from "@dddl/logger"
+import { Logger } from "@dddl/core/dist/logger"
 
 describe("OnUserRegistered", function () {
   describe("async", function () {

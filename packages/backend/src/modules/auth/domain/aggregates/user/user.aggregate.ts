@@ -1,12 +1,13 @@
-import { AggregateRootWithState } from "@dddl/domain"
+import { AggregateRootWithState } from "@dddl/core/dist/domain"
 import { UserId } from "./user.id"
-import { OmitAndModify } from "@dddl/common"
+import { OmitAndModify } from "@dddl/core/dist/common"
 import { Token, TokenList } from "./token.vo"
 import { Email, EmailStatus } from "./email.vo"
 import { UserCreated } from "./user.events"
-import { EitherResultP, Result } from "@dddl/rop"
+import { EitherResultP, Result } from "@dddl/core/dist/rop"
 import { v4 } from "uuid"
 import { AuthUserModel } from "../../../../../applications/common/adapters/dal/schema/models"
+import { InvalidDataErr } from "@dddl/core/dist/errors"
 
 export type UserState = OmitAndModify<
   AuthUserModel,
@@ -39,20 +40,14 @@ export class User extends AggregateRootWithState<UserId, UserState> {
       value: props.email,
       status: EmailStatus.activating,
       approved: false,
-    })
-    const tokenOrFail = await Token.create({
-      value: v4(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      active: true,
-      deactivatedAt: null,
+      token: v4(),
     })
 
-    if (emailOrFail.isError() || tokenOrFail.isError()) {
-      return Result.combineErrorAndFlat(emailOrFail, tokenOrFail)
+    if (emailOrFail.isError()) {
+      return Result.combineErrorAndFlat(emailOrFail)
     }
 
-    const tokenListOrFail = await TokenList.create([tokenOrFail.value])
+    const tokenListOrFail = await TokenList.create([])
     if (tokenListOrFail.isError()) {
       return Result.error(tokenListOrFail.error)
     }
@@ -67,5 +62,23 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     }
 
     return User.create(props.id, userProps)
+  }
+
+  async approveAndActivateEmail(email: string): EitherResultP {
+    const emailIndex = this.state.emailList.findIndex((em) => em.props.value === email)
+    const em = this.state.emailList[emailIndex]
+    if (!em) {
+      return Result.error(new InvalidDataErr(`There is no email like: ${email}`))
+    }
+    const approvedEmailRes = await em.approve()
+    if (approvedEmailRes.isError()) {
+      return Result.error(approvedEmailRes.error)
+    }
+    const approvedAndActivatedEmailRes = await approvedEmailRes.value.activate()
+    if (approvedAndActivatedEmailRes.isError()) {
+      return Result.error(approvedAndActivatedEmailRes.error)
+    }
+    this.state.emailList[emailIndex] = approvedAndActivatedEmailRes.value
+    return Result.oku()
   }
 }

@@ -1,7 +1,7 @@
-import { FindByPkOptions, RepositoryWithTx, Specification } from "@dddl/dal"
-import { EitherResultP, Result } from "@dddl/rop"
+import { FindByPkOptions, RepositoryWithTx, Specification } from "@dddl/core/dist/dal"
+import { EitherResultP, Result } from "@dddl/core/dist/rop"
 import * as Knex from "knex"
-import { CriticalErr } from "@dddl/errors"
+import { CriticalErr } from "@dddl/core/dist/errors"
 import {
   ModelClass,
   Model as ObjectionModel,

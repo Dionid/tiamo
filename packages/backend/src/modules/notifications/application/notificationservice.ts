@@ -1,5 +1,5 @@
 import { User } from "../../auth/domain/aggregates/user/user.aggregate"
-import { EitherResultP } from "@dddl/rop"
+import { EitherResultP } from "@dddl/core/dist/rop"
 
 export interface NotificationSender {
   sendRegistrationApprovalMail(userEmail: string, token: string): EitherResultP
