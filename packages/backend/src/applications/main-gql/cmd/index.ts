@@ -47,8 +47,8 @@ import { NOTIFICATION_SENDER_DI_TOKEN } from "../../../modules/notifications/app
 import { SendRegisterApprovalEmailCommand } from "../../../modules/notifications/application/command/send-register-approval-email/command"
 import { SendRegisterApprovalEmail } from "../../../modules/notifications/application/command/send-register-approval-email"
 import { initOrchestratorService } from "../../../modules/orchestration/export"
-import {ApproveEmailByToken} from "../../../modules/auth/application/commands/approve-token"
-import {ApproveEmailByTokenCommand} from "../../../modules/auth/application/commands/approve-token/command"
+import { ApproveEmailByToken } from "../../../modules/auth/application/commands/approve-token"
+import { ApproveEmailByTokenCommand } from "../../../modules/auth/application/commands/approve-token/command"
 
 async function main() {
   // ENV

@@ -40,20 +40,14 @@ export class User extends AggregateRootWithState<UserId, UserState> {
       value: props.email,
       status: EmailStatus.activating,
       approved: false,
-    })
-    const tokenOrFail = await Token.create({
-      value: v4(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      active: true,
-      deactivatedAt: null,
+      token: v4(),
     })
 
-    if (emailOrFail.isError() || tokenOrFail.isError()) {
-      return Result.combineErrorAndFlat(emailOrFail, tokenOrFail)
+    if (emailOrFail.isError()) {
+      return Result.combineErrorAndFlat(emailOrFail)
     }
 
-    const tokenListOrFail = await TokenList.create([tokenOrFail.value])
+    const tokenListOrFail = await TokenList.create([])
     if (tokenListOrFail.isError()) {
       return Result.error(tokenListOrFail.error)
     }

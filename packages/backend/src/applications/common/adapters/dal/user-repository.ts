@@ -1,7 +1,5 @@
 import {
   KNEX_CONNECTION_DI_TOKEN,
-  KnexRepositoryBase,
-  KnexRepositoryWithJsonColumnsMixin,
   TX_CONTAINER_DI_TOKEN,
   TxContainer,
 } from "@dddl/knex/dist/dal"
@@ -24,8 +22,10 @@ import {
   EmailStatus,
 } from "../../../../modules/auth/domain/aggregates/user/email.vo"
 import Knex from "knex"
-import { GetUserByActiveEmail } from "../../../../modules/auth/domain/repositories"
-import { AuthUser } from "./schema/db-introspection"
+import {
+  GetUserByActiveEmail,
+  GetUserByApprovingEmailAndToken,
+} from "../../../../modules/auth/domain/repositories"
 import { ObjectionRepositoryBase } from "./objection-repository"
 import { QueryBuilderType } from "objection"
 import { GetUserByActivatingEmailAndUserId } from "../../../../modules/notifications/application/repositories"
@@ -54,6 +54,14 @@ class UserSpecMapper {
             )}, "status": ${JSON.stringify(EmailStatus.activating)}}]'`,
           )
           .where({ id: spec.userId.toString() })
+      } else if (spec instanceof GetUserByApprovingEmailAndToken) {
+        resultQuery = query.whereRaw(
+          `email_list @> '[{"value": ${JSON.stringify(
+            spec.email,
+          )}, "status": ${JSON.stringify(
+            EmailStatus.activating,
+          )}, "token": ${JSON.stringify(spec.token)}}]'`,
+        )
       } else {
         throw new CriticalErr(
           `This specification hasn't been done: ${spec.constructor.name}`,
@@ -71,8 +79,8 @@ class UserAggregateMapper {
       for (let i = 0; i < model.tokenList.length; i++) {
         const token = model.tokenList[i]
         const tokenRes = await Token.create({
-          createdAt: new Date(token.createdAt as string),
-          updatedAt: new Date(token.updatedAt as string),
+          createdAt: token.createdAt ? new Date(token.createdAt as string) : new Date(),
+          updatedAt: token.updatedAt ? new Date(token.updatedAt as string) : new Date(),
           value: token.value as string,
           active: token.active as boolean,
           deactivatedAt: new Date(token.deactivatedAt as string),
@@ -93,11 +101,12 @@ class UserAggregateMapper {
       for (let i = 0; i < model.emailList.length; i++) {
         const email = model.emailList[i]
         const emailRes = await Email.__createByRepository({
-          createdAt: new Date(email.createdAt as string),
-          updatedAt: new Date(email.updatedAt as string),
+          createdAt: email.createdAt ? new Date(email.createdAt as string) : new Date(),
+          updatedAt: email.updatedAt ? new Date(email.updatedAt as string) : new Date(),
           value: email.value as string,
           approved: email.approved as boolean,
           status: email.status as EmailStatus,
+          token: email.token as string,
         })
         if (emailRes.isError()) {
           return Result.error(emailRes.error)

@@ -18,6 +18,7 @@ describe("User aggregate", function () {
         }
         expect(res.value).toBeInstanceOf(User)
         expect(res.value.domainEvents.length).toBe(1)
+        expect(res.value.state.tokenList.props.length).toBe(0)
       })
     })
 
@@ -46,6 +47,7 @@ describe("User aggregate", function () {
           value: "test@mail.com",
           status: EmailStatus.activating,
           approved: false,
+          token: v4(),
         })
         if (emailRes.isError()) {
           throw emailRes.error

@@ -40,21 +40,20 @@ export class SendRegisterApprovalEmail
       )
     }
 
-    const activeToken = await userRes.value.state.tokenList.getActiveToken()
-    if (activeToken.isError()) {
-      return Result.error(activeToken.error)
-    }
-    if (!activeToken.value) {
+    const email = userRes.value.state.emailList.find(
+      (em) => em.props.value === req.data.email,
+    )
+    if (!email) {
       return Result.error(
         new CriticalErr(
-          `User with id: ${req.data.userId} and email: ${req.data.userId} doesn't have invalid token`,
+          `User with id: ${req.data.userId} and email: ${req.data.userId} not found`,
         ),
       )
     }
 
     return this.notificationSender.sendRegistrationApprovalMail(
-      req.data.email,
-      activeToken.value.props.value,
+      email.props.value,
+      email.props.token,
     )
   }
 }

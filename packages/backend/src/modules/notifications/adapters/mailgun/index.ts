@@ -14,7 +14,7 @@ export class MailgunNotificationSender {
       from: "Excited User <me@samples.mailgun.org>",
       to: `${userEmail}`,
       subject: "Email verification",
-      text: `Hi there! We are trying to verify your email ${userEmail}. Get your token: ${token}!`,
+      text: `Hi there! We are trying to verify your email ${userEmail}. Get your token: ${token}`,
     }
     try {
       const res = await this.client.messages().send(data)
