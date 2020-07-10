@@ -7,3 +7,9 @@ export class UserRegistered extends IntegrationEvent {
     super(v4())
   }
 }
+
+export class UserApprovedEmailByToken extends IntegrationEvent {
+  constructor(public readonly userId: UserId, public readonly email: string) {
+    super(v4())
+  }
+}

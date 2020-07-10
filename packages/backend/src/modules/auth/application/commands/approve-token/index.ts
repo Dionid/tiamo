@@ -9,6 +9,7 @@ import {
   UserRepository,
 } from "../../../domain/repositories"
 import { InvalidDataErr } from "@dddl/core/dist/errors"
+import {UserApprovedEmailByToken} from "../../events"
 
 export class ApproveEmailByToken implements CommandHandler<ApproveEmailByTokenCommand> {
   constructor(
@@ -45,6 +46,9 @@ export class ApproveEmailByToken implements CommandHandler<ApproveEmailByTokenCo
     }
 
     // . Send events
-    return await this.eventBus.publish(userRes.value.domainEvents)
+    return await this.eventBus.publish([
+      ...userRes.value.domainEvents,
+      new UserApprovedEmailByToken(userRes.value.id, req.data.email),
+    ])
   }
 }
