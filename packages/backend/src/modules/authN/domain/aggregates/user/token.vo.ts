@@ -44,9 +44,9 @@ export class TokenList extends ValueObject<Token[]> {
     return Result.ok(new TokenList(props))
   }
 
-  public async getActiveToken(): EitherResultP<Token | undefined> {
+  public getActiveToken(): Token | undefined {
     const token = this.props.find((token) => token.props.active)
-    return Result.ok(token)
+    return token
   }
 
   public async deactivateActiveToken(token: Token): EitherResultP<TokenList> {
@@ -63,5 +63,9 @@ export class TokenList extends ValueObject<Token[]> {
         return t
       }),
     )
+  }
+
+  public addToken(token: Token): EitherResultP<TokenList> {
+    return TokenList.create([...this.props, token])
   }
 }

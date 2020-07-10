@@ -81,4 +81,34 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     this.state.emailList[emailIndex] = approvedAndActivatedEmailRes.value
     return Result.oku()
   }
+
+  async releaseNewToken(): EitherResultP<Token> {
+    const activeToken = this.state.tokenList.getActiveToken()
+    if (activeToken) {
+      const res = await this.state.tokenList.deactivateActiveToken(activeToken)
+      if (res.isError()) {
+        return Result.error(res.error)
+      }
+      this.state.tokenList = res.value
+    }
+
+    const newToken = await Token.create({
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      value: v4(),
+      active: true,
+      deactivatedAt: null,
+    })
+    if (newToken.isError()) {
+      return Result.error(newToken.error)
+    }
+
+    const newTokenList = await this.state.tokenList.addToken(newToken.value)
+    if (newTokenList.isError()) {
+      return Result.error(newTokenList.error)
+    }
+    this.state.tokenList = newTokenList.value
+
+    return Result.ok(newToken.value)
+  }
 }

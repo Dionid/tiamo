@@ -13,3 +13,9 @@ export class UserApprovedEmailByToken extends IntegrationEvent {
     super(v4())
   }
 }
+
+export class UserPasswordlessLoginedByToken extends IntegrationEvent {
+  constructor(public readonly token: string) {
+    super(v4())
+  }
+}
