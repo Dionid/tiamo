@@ -7,6 +7,7 @@ import { UserCreated } from "./user.events"
 import { EitherResultP, Result } from "@dddl/rop"
 import { v4 } from "uuid"
 import { AuthUserModel } from "../../../../../applications/common/adapters/dal/schema/models"
+import { InvalidDataErr } from "@dddl/errors"
 
 export type UserState = OmitAndModify<
   AuthUserModel,
@@ -67,5 +68,23 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     }
 
     return User.create(props.id, userProps)
+  }
+
+  async approveAndActivateEmail(email: string): EitherResultP {
+    const emailIndex = this.state.emailList.findIndex((em) => em.props.value === email)
+    const em = this.state.emailList[emailIndex]
+    if (!em) {
+      return Result.error(new InvalidDataErr(`There is no email like: ${email}`))
+    }
+    const activatedEmailRes = await em.activate()
+    if (activatedEmailRes.isError()) {
+      return Result.error(activatedEmailRes.error)
+    }
+    const approvedAndActivatedEmailRes = await activatedEmailRes.value.approve()
+    if (approvedAndActivatedEmailRes.isError()) {
+      return Result.error(approvedAndActivatedEmailRes.error)
+    }
+    this.state.emailList[emailIndex] = approvedAndActivatedEmailRes.value
+    return Result.oku()
   }
 }
