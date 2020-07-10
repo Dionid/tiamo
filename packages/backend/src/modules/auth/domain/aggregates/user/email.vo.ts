@@ -1,7 +1,7 @@
-import { ValueObject } from "@dddl/domain"
+import { ValueObject } from "@dddl/core/dist/domain"
 import * as Joi from "@hapi/joi"
-import { EitherResultP, Result } from "@dddl/rop"
-import { InvalidDataErr, PublicErr } from "@dddl/errors"
+import { EitherResultP, Result } from "@dddl/core/dist/rop"
+import { InvalidDataErr, PublicErr } from "@dddl/core/dist/errors"
 
 export enum EmailStatus {
   "activating" = "activating",

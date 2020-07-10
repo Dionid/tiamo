@@ -1,9 +1,9 @@
-import { CommandHandler, CommandRequest } from "@dddl/cqrs"
+import { CommandHandler, CommandRequest } from "@dddl/core/dist/cqrs"
 import { RegisterUserPasswordlessCommand } from "./command"
-import { EitherResultP, Result } from "@dddl/rop"
-import { EVENT_BUS_DI_TOKEN, EventBus } from "@dddl/eda"
+import { EitherResultP, Result } from "@dddl/core/dist/rop"
+import { EVENT_BUS_DI_TOKEN, EventBus } from "@dddl/core/dist/eda"
 import { Inject } from "typedi"
-import { UseCaseReqMeta } from "@dddl/usecase"
+import { UseCaseReqMeta } from "@dddl/core/dist/usecase"
 import { User } from "../../../domain/aggregates/user/user.aggregate"
 import { UserRegistered } from "../../events"
 import { UserId } from "../../../domain/aggregates/user/user.id"
@@ -12,7 +12,7 @@ import {
   USER_REPOSITORY_DI_TOKEN,
   UserRepository,
 } from "../../../domain/repositories"
-import { InvalidDataErr } from "@dddl/errors"
+import { InvalidDataErr } from "@dddl/core/dist/errors"
 
 export const EmailAlreadyTakenError = new InvalidDataErr("Email is already taken")
 

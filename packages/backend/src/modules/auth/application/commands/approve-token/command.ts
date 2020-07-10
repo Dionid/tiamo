@@ -1,6 +1,6 @@
-import { Command } from "@dddl/cqrs"
+import { Command } from "@dddl/core/dist/cqrs"
 
-export class ApproveTokenCommand extends Command {
+export class ApproveEmailByTokenCommand extends Command {
   constructor(public email: string, public token: string) {
     super()
   }

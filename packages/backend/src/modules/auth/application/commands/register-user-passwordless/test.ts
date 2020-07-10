@@ -1,15 +1,15 @@
 import { GetUserByActiveEmail, UserRepository } from "../../../domain/repositories"
 import { any, Matcher, mock, MockProxy } from "jest-mock-extended"
-import { DSEvent, EventBus } from "@dddl/eda"
+import { DSEvent, EventBus } from "@dddl/core/dist/eda"
 import { EmailAlreadyTakenError, RegisterUserPasswordless } from "./index"
-import { UseCaseReqMeta, UseCaseRequest } from "@dddl/usecase"
+import { UseCaseReqMeta, UseCaseRequest } from "@dddl/core/dist/usecase"
 import { v4 } from "uuid"
 import { RegisterUserPasswordlessCommand } from "./command"
-import { Result } from "@dddl/rop"
+import { Result } from "@dddl/core/dist/rop"
 import { User } from "../../../domain/aggregates/user/user.aggregate"
 import { UserRegistered } from "../../events"
 import { UserCreated } from "../../../domain/aggregates/user/user.events"
-import { Specification } from "@dddl/dal"
+import { Specification } from "@dddl/core/dist/dal"
 
 describe("Register User paswordless", function () {
   let userRepo: MockProxy<UserRepository>

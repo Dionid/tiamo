@@ -1,6 +1,6 @@
-import { EitherResultP, Result } from "@dddl/rop"
+import { EitherResultP, Result } from "@dddl/core/dist/rop"
 import * as Mailgun from "mailgun-js"
-import { LOGGER_DI_TOKEN, Logger } from "@dddl/logger"
+import { LOGGER_DI_TOKEN, Logger } from "@dddl/core/dist/logger"
 import { Inject } from "typedi"
 
 export class MailgunNotificationSender {

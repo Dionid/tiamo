@@ -1,24 +1,22 @@
-import { CommandHandler, CommandRequest } from "@dddl/cqrs"
-import { ApproveTokenCommand } from "./command"
-import { EitherResultP, Result } from "@dddl/rop"
+import { CommandHandler, CommandRequest } from "@dddl/core/dist/cqrs"
+import { ApproveEmailByTokenCommand } from "./command"
+import { EitherResultP, Result } from "@dddl/core/dist/rop"
 import { Inject } from "typedi"
-import { EVENT_BUS_DI_TOKEN, EventBus } from "@dddl/eda"
+import { EVENT_BUS_DI_TOKEN, EventBus } from "@dddl/core/dist/eda"
 import {
   GetUserByApprovingEmailAndToken,
   USER_REPOSITORY_DI_TOKEN,
   UserRepository,
 } from "../../../domain/repositories"
-import { InvalidDataErr } from "@dddl/errors"
+import { InvalidDataErr } from "@dddl/core/dist/errors"
 
-export class ApproveToken implements CommandHandler<ApproveTokenCommand> {
+export class ApproveEmailByToken implements CommandHandler<ApproveEmailByTokenCommand> {
   constructor(
     @Inject(EVENT_BUS_DI_TOKEN) private eventBus: EventBus,
     @Inject(USER_REPOSITORY_DI_TOKEN) private userRepo: UserRepository,
   ) {}
 
-  async handle(
-    req: CommandRequest<ApproveTokenCommand, Record<any, any>>,
-  ): EitherResultP {
+  async handle(req: CommandRequest<ApproveEmailByTokenCommand>): EitherResultP {
     // . Get User by token and approving email
     const userRes = await this.userRepo.getBySpecs([
       new GetUserByApprovingEmailAndToken(req.data.email, req.data.token),

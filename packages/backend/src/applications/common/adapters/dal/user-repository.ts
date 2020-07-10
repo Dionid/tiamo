@@ -4,7 +4,7 @@ import {
   KnexRepositoryWithJsonColumnsMixin,
   TX_CONTAINER_DI_TOKEN,
   TxContainer,
-} from "@dddl/dal-knex"
+} from "@dddl/knex/dist/dal"
 import { UserId } from "../../../../modules/auth/domain/aggregates/user/user.id"
 import {
   User,
@@ -12,13 +12,13 @@ import {
 } from "../../../../modules/auth/domain/aggregates/user/user.aggregate"
 import { Inject } from "typedi"
 import { v4 } from "uuid"
-import { Specification } from "@dddl/dal"
+import { Specification } from "@dddl/core/dist/dal"
 import { AuthUserModel, AuthUserOModel } from "./schema/models"
 import {
   Token,
   TokenList,
 } from "../../../../modules/auth/domain/aggregates/user/token.vo"
-import { EitherResultP, Result } from "@dddl/rop"
+import { EitherResultP, Result } from "@dddl/core/dist/rop"
 import {
   Email,
   EmailStatus,
@@ -29,7 +29,7 @@ import { AuthUser } from "./schema/db-introspection"
 import { ObjectionRepositoryBase } from "./objection-repository"
 import { QueryBuilderType } from "objection"
 import { GetUserByActivatingEmailAndUserId } from "../../../../modules/notifications/application/repositories"
-import { CriticalErr } from "@dddl/errors"
+import { CriticalErr } from "@dddl/core/dist/errors"
 
 class UserSpecMapper {
   static map(

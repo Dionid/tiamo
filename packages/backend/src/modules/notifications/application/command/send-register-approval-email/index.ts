@@ -1,15 +1,15 @@
-import { CommandHandler, CommandRequest } from "@dddl/cqrs"
+import { CommandHandler, CommandRequest } from "@dddl/core/dist/cqrs"
 import { Inject } from "typedi"
 import {
   USER_REPOSITORY_DI_TOKEN,
   UserRepository,
 } from "../../../../auth/domain/repositories"
-import { EitherResultP, Result } from "@dddl/rop"
+import { EitherResultP, Result } from "@dddl/core/dist/rop"
 import {
   NOTIFICATION_SENDER_DI_TOKEN,
   NotificationSender,
 } from "../../notificationservice"
-import { CriticalErr } from "@dddl/errors"
+import { CriticalErr } from "@dddl/core/dist/errors"
 import { GetUserByActivatingEmailAndUserId } from "../../repositories"
 import { SendRegisterApprovalEmailCommand } from "./command"
 

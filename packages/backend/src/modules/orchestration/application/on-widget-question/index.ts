@@ -1,10 +1,10 @@
-import { AsyncEventHandler, EventRequest, SyncEventHandler } from "@dddl/eda"
+import { AsyncEventHandler, EventRequest, SyncEventHandler } from "@dddl/core/dist/eda"
 import { Inject } from "typedi"
-import { CQ_BUS_DI_TOKEN, CQBus } from "@dddl/cqrs"
-import { EitherResultP } from "@dddl/rop"
+import { CQ_BUS_DI_TOKEN, CQBus } from "@dddl/core/dist/cqrs"
+import { EitherResultP } from "@dddl/core/dist/rop"
 import { UserRegistered } from "../../../auth/application/events"
 import { SendRegisterApprovalEmailCommand } from "../../../notifications/application/command/send-register-approval-email/command"
-import { LOGGER_DI_TOKEN, Logger } from "@dddl/logger"
+import { LOGGER_DI_TOKEN, Logger } from "@dddl/core/dist/logger"
 
 export class OnUserRegistered extends AsyncEventHandler<UserRegistered, undefined> {
   constructor(
