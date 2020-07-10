@@ -6,7 +6,7 @@ import { UserRegistered } from "../../../authN/application/events"
 import { SendRegisterApprovalEmailCommand } from "../../../notifications/application/command/send-register-approval-email/command"
 import { LOGGER_DI_TOKEN, Logger } from "@dddl/core/dist/logger"
 
-export class OnUserRegistered extends AsyncEventHandler<UserRegistered, undefined> {
+export class OnUserRegisteredAsync extends AsyncEventHandler<UserRegistered, undefined> {
   constructor(
     @Inject(CQ_BUS_DI_TOKEN) private cqBus: CQBus,
     @Inject(LOGGER_DI_TOKEN) private logger: Logger,

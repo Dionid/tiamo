@@ -15,7 +15,11 @@ export class UserApprovedEmailByToken extends IntegrationEvent {
 }
 
 export class UserPasswordlessLoginedByToken extends IntegrationEvent {
-  constructor(public readonly token: string) {
+  constructor(
+    public readonly userId: UserId,
+    public readonly token: string,
+    public readonly email: string,
+  ) {
     super(v4())
   }
 }

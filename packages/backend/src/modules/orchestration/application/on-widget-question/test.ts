@@ -4,7 +4,7 @@ import { Matcher, mock, MockProxy } from "jest-mock-extended"
 import { Result } from "@dddl/core/dist/rop"
 import { UseCaseReqMeta } from "@dddl/core/dist/usecase"
 import { v4 } from "uuid"
-import { OnUserRegistered } from "./index"
+import { OnUserRegisteredAsync } from "./index"
 import { UserRegistered } from "../../../authN/application/events"
 import { UserId } from "../../../authN/domain/aggregates/user/user.id"
 import { SendRegisterApprovalEmailCommand } from "../../../notifications/application/command/send-register-approval-email/command"
@@ -14,7 +14,7 @@ describe("OnUserRegistered", function () {
   describe("async", function () {
     let cqBus: MockProxy<CQBus>
     let logger: MockProxy<Logger>
-    let uc: OnUserRegistered
+    let uc: OnUserRegisteredAsync
     let event: UserRegistered
     let meta: DSEventMeta
     let userId: string
@@ -23,7 +23,7 @@ describe("OnUserRegistered", function () {
     beforeEach(async () => {
       cqBus = mock<CQBus>()
       logger = mock<Logger>()
-      uc = new OnUserRegistered(cqBus, logger)
+      uc = new OnUserRegisteredAsync(cqBus, logger)
       userId = v4()
       event = new UserRegistered(new UserId(userId), "test@mail.com")
       const metaOrF = await DSEventMeta.create({ callerId: v4(), transactionId: v4() })
