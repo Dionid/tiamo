@@ -1,9 +1,9 @@
 import { IResolvers } from "apollo-server"
 import { CQBus } from "@dddl/core/dist/cqrs"
-import { RegisterUserPasswordlessCommand } from "../../../../modules/auth/application/commands/register-user-passwordless/command"
+import { RegisterUserPasswordlessCommand } from "../../../../modules/authN/application/commands/register-user-passwordless/command"
 import { UseCaseReqMeta } from "@dddl/core/dist/usecase"
 import { v4 } from "uuid"
-import { ApproveEmailByTokenCommand } from "../../../../modules/auth/application/commands/approve-token/command"
+import { ApproveEmailByTokenCommand } from "../../../../modules/authN/application/commands/approve-token/command"
 
 export interface ResolversCtx {
   cqBus: CQBus

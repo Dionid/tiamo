@@ -3,11 +3,11 @@ import {
   TX_CONTAINER_DI_TOKEN,
   TxContainer,
 } from "@dddl/knex/dist/dal"
-import { UserId } from "../../../../modules/auth/domain/aggregates/user/user.id"
+import { UserId } from "../../../../modules/authN/domain/aggregates/user/user.id"
 import {
   User,
   UserState,
-} from "../../../../modules/auth/domain/aggregates/user/user.aggregate"
+} from "../../../../modules/authN/domain/aggregates/user/user.aggregate"
 import { Inject } from "typedi"
 import { v4 } from "uuid"
 import { Specification } from "@dddl/core/dist/dal"
@@ -15,17 +15,17 @@ import { AuthUserModel, AuthUserOModel } from "./schema/models"
 import {
   Token,
   TokenList,
-} from "../../../../modules/auth/domain/aggregates/user/token.vo"
+} from "../../../../modules/authN/domain/aggregates/user/token.vo"
 import { EitherResultP, Result } from "@dddl/core/dist/rop"
 import {
   Email,
   EmailStatus,
-} from "../../../../modules/auth/domain/aggregates/user/email.vo"
+} from "../../../../modules/authN/domain/aggregates/user/email.vo"
 import Knex from "knex"
 import {
   GetUserByActiveEmail,
   GetUserByApprovingEmailAndToken,
-} from "../../../../modules/auth/domain/repositories"
+} from "../../../../modules/authN/domain/repositories"
 import { ObjectionRepositoryBase } from "./objection-repository"
 import { QueryBuilderType } from "objection"
 import { GetUserByActivatingEmailAndUserId } from "../../../../modules/notifications/application/repositories"

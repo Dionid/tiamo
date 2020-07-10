@@ -1,5 +1,5 @@
 import { EventBusProvider } from "@dddl/core/dist/eda"
-import { UserRegistered } from "../../auth/application/events"
+import { UserRegistered } from "../../authN/application/events"
 import { OnUserRegistered } from "../application/on-widget-question"
 
 export function initOrchestratorService(

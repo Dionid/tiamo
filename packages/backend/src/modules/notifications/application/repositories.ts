@@ -1,9 +1,9 @@
 import { Specification } from "@dddl/core/dist/dal"
-import { User } from "../../auth/domain/aggregates/user/user.aggregate"
+import { User } from "../../authN/domain/aggregates/user/user.aggregate"
 import * as Joi from "@hapi/joi"
 import { EitherResult, Result } from "@dddl/core/dist/rop"
 import { InvalidDataErr, PublicErr } from "@dddl/core/dist/errors"
-import { UserId } from "../../auth/domain/aggregates/user/user.id"
+import { UserId } from "../../authN/domain/aggregates/user/user.id"
 
 export class GetUserByActivatingEmailAndUserId extends Specification<User> {
   private constructor(public userId: UserId, public email: string) {

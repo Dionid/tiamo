@@ -1,4 +1,4 @@
-import { User } from "../../auth/domain/aggregates/user/user.aggregate"
+import { User } from "../../authN/domain/aggregates/user/user.aggregate"
 import { EitherResultP } from "@dddl/core/dist/rop"
 
 export interface NotificationSender {

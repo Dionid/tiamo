@@ -31,12 +31,12 @@ import {
   ValidateRequestDecorator,
 } from "@dddl/core/dist/usecase-decorators"
 import { KnexTransactionDecorator } from "@dddl/knex/dist/usecase-decorators"
-import { RegisterUserPasswordlessCommand } from "../../../modules/auth/application/commands/register-user-passwordless/command"
-import { RegisterUserPasswordless } from "../../../modules/auth/application/commands/register-user-passwordless"
+import { RegisterUserPasswordlessCommand } from "../../../modules/authN/application/commands/register-user-passwordless/command"
+import { RegisterUserPasswordless } from "../../../modules/authN/application/commands/register-user-passwordless"
 import {
   USER_REPOSITORY_DI_TOKEN,
   UserRepository as IUserRepository,
-} from "../../../modules/auth/domain/repositories"
+} from "../../../modules/authN/domain/repositories"
 import { v4 } from "uuid"
 import { schema } from "../adapters/gql/schema"
 import { ResolversCtx } from "../adapters/gql/resolver-map"
@@ -47,8 +47,8 @@ import { NOTIFICATION_SENDER_DI_TOKEN } from "../../../modules/notifications/app
 import { SendRegisterApprovalEmailCommand } from "../../../modules/notifications/application/command/send-register-approval-email/command"
 import { SendRegisterApprovalEmail } from "../../../modules/notifications/application/command/send-register-approval-email"
 import { initOrchestratorService } from "../../../modules/orchestration/export"
-import { ApproveEmailByToken } from "../../../modules/auth/application/commands/approve-token"
-import { ApproveEmailByTokenCommand } from "../../../modules/auth/application/commands/approve-token/command"
+import { ApproveEmailByToken } from "../../../modules/authN/application/commands/approve-token"
+import { ApproveEmailByTokenCommand } from "../../../modules/authN/application/commands/approve-token/command"
 
 async function main() {
   // ENV

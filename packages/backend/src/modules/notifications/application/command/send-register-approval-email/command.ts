@@ -1,4 +1,4 @@
-import { UserId } from "../../../../auth/domain/aggregates/user/user.id"
+import { UserId } from "../../../../authN/domain/aggregates/user/user.id"
 import { IsEmail, IsNotEmpty, IsUUID } from "class-validator"
 import { Command } from "@dddl/core/dist/cqrs"
 
