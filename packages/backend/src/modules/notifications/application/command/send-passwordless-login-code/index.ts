@@ -9,16 +9,16 @@ import {
   NOTIFICATION_SENDER_DI_TOKEN,
   NotificationSender,
 } from "../../notificationservice"
-import { SendPasswordlessLoginTokenCommand } from "./command"
+import { SendPasswordlessLoginCodeCommand } from "./command"
 
-export class SendPasswordlessLoginToken
-  implements CommandHandler<SendPasswordlessLoginTokenCommand> {
+export class SendPasswordlessLoginCode
+  implements CommandHandler<SendPasswordlessLoginCodeCommand> {
   constructor(
     @Inject(USER_REPOSITORY_DI_TOKEN) private userRepo: UserRepository,
     @Inject(NOTIFICATION_SENDER_DI_TOKEN) private notificationSender: NotificationSender,
   ) {}
 
-  async handle(req: CommandRequest<SendPasswordlessLoginTokenCommand>): EitherResultP {
+  async handle(req: CommandRequest<SendPasswordlessLoginCodeCommand>): EitherResultP {
     return this.notificationSender.sendPasswordlessAuthToken(
       req.data.email,
       req.data.token,

@@ -2,7 +2,7 @@ import { Command } from "@dddl/core/dist/cqrs"
 import { IsUUID, IsNotEmpty, IsEmail } from "class-validator"
 import { UserId } from "../../../../authN/domain/aggregates/user/user.id"
 
-export class SendPasswordlessLoginTokenCommand extends Command {
+export class SendPasswordlessLoginCodeCommand extends Command {
   @IsNotEmpty()
   public readonly userId: UserId
   @IsUUID()

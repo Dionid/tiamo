@@ -4,7 +4,7 @@ import { RegisterUserPasswordlessCommand } from "../../../../modules/authN/appli
 import { UseCaseReqMeta } from "@dddl/core/dist/usecase"
 import { v4 } from "uuid"
 import { ApproveEmailByTokenCommand } from "../../../../modules/authN/application/commands/approve-token/command"
-import { LoginPasswordlessByEmailCommand } from "../../../../modules/authN/application/commands/login-passwordless-by-email/command"
+import { RequestPasswordlessCodeByEmailCommand } from "../../../../modules/authN/application/commands/request-passwordless-code-by-email/command"
 import { ApproveEmailByTokenInput, RegisterUserInput } from "./types"
 
 export interface ResolversCtx {
@@ -56,7 +56,7 @@ export const resolvers: IResolvers<any, ResolversCtx> = {
     },
     loginPasswordlessByEmail: async (root, { req }, ctx): Promise<Result> => {
       const res = await ctx.cqBus.handle(
-        new LoginPasswordlessByEmailCommand(req.email),
+        new RequestPasswordlessCodeByEmailCommand(req.email),
         new UseCaseReqMeta({}),
       )
       if (res.isError()) {

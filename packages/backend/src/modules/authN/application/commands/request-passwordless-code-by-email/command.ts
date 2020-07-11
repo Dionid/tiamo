@@ -1,6 +1,6 @@
 import { Command } from "@dddl/core/dist/cqrs"
 
-export class LoginPasswordlessByEmailCommand extends Command {
+export class RequestPasswordlessCodeByEmailCommand extends Command {
   constructor(public email: string) {
     super()
   }

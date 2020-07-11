@@ -1,13 +1,13 @@
 import { CQ_BUS_DI_TOKEN, CQBus } from "@dddl/core/dist/cqrs"
 import { LOGGER_DI_TOKEN, Logger } from "@dddl/core/dist/logger"
 import { Inject } from "typedi"
-import { UserPasswordlessLoginedByToken } from "../../../authN/application/events"
+import { UserPasswordlessCodeByEmailRequested } from "../../../authN/application/events"
 import { AsyncEventHandler, EventRequest } from "@dddl/core/dist/eda"
 import { EitherResultP } from "@dddl/core/dist/rop"
-import { SendPasswordlessLoginTokenCommand } from "../../../notifications/application/command/send-passwordless-login-token/command"
+import { SendPasswordlessLoginCodeCommand } from "../../../notifications/application/command/send-passwordless-login-code/command"
 
-export class OnUserPasswordlessLoginedByTokenSync extends AsyncEventHandler<
-  UserPasswordlessLoginedByToken,
+export class OnUserPasswordlessCodeByEmailRequestedSync extends AsyncEventHandler<
+  UserPasswordlessCodeByEmailRequested,
   undefined
 > {
   constructor(
@@ -17,9 +17,9 @@ export class OnUserPasswordlessLoginedByTokenSync extends AsyncEventHandler<
     super()
   }
 
-  async handle(req: EventRequest<UserPasswordlessLoginedByToken>): EitherResultP {
+  async handle(req: EventRequest<UserPasswordlessCodeByEmailRequested>): EitherResultP {
     const res = await this.cqBus.handle<undefined>(
-      new SendPasswordlessLoginTokenCommand(
+      new SendPasswordlessLoginCodeCommand(
         req.data.userId,
         req.data.token,
         req.data.email,

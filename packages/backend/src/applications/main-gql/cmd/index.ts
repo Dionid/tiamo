@@ -52,10 +52,10 @@ import { SendRegisterApprovalEmail } from "../../../modules/notifications/applic
 import { initOrchestratorService } from "../../../modules/orchestration/export"
 import { ApproveEmailByToken } from "../../../modules/authN/application/commands/approve-token"
 import { ApproveEmailByTokenCommand } from "../../../modules/authN/application/commands/approve-token/command"
-import { SendPasswordlessLoginTokenCommand } from "../../../modules/notifications/application/command/send-passwordless-login-token/command"
-import { SendPasswordlessLoginToken } from "../../../modules/notifications/application/command/send-passwordless-login-token"
-import { LoginPasswordlessByEmailCommand } from "../../../modules/authN/application/commands/login-passwordless-by-email/command"
-import { LoginPasswordlessByEmail } from "../../../modules/authN/application/commands/login-passwordless-by-email"
+import { SendPasswordlessLoginCodeCommand } from "../../../modules/notifications/application/command/send-passwordless-login-code/command"
+import { SendPasswordlessLoginCode } from "../../../modules/notifications/application/command/send-passwordless-login-code"
+import { RequestPasswordlessCodeByEmailCommand } from "../../../modules/authN/application/commands/request-passwordless-code-by-email/command"
+import { RequestPasswordlessCodeByEmail } from "../../../modules/authN/application/commands/request-passwordless-code-by-email"
 
 async function main() {
   // ENV
@@ -158,8 +158,8 @@ async function main() {
   cqBus.subscribe(RegisterUserPasswordlessCommand, RegisterUserPasswordless)
   cqBus.subscribe(SendRegisterApprovalEmailCommand, SendRegisterApprovalEmail)
   cqBus.subscribe(ApproveEmailByTokenCommand, ApproveEmailByToken)
-  cqBus.subscribe(LoginPasswordlessByEmailCommand, LoginPasswordlessByEmail)
-  cqBus.subscribe(SendPasswordlessLoginTokenCommand, SendPasswordlessLoginToken)
+  cqBus.subscribe(RequestPasswordlessCodeByEmailCommand, RequestPasswordlessCodeByEmail)
+  cqBus.subscribe(SendPasswordlessLoginCodeCommand, SendPasswordlessLoginCode)
 
   // Orchestration
   initOrchestratorService(syncEventBusProvider, asyncEventBusProvider)

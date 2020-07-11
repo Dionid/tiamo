@@ -1,10 +1,10 @@
 import { EventBusProvider } from "@dddl/core/dist/eda"
 import {
-  UserPasswordlessLoginedByToken,
+  UserPasswordlessCodeByEmailRequested,
   UserRegistered,
 } from "../../authN/application/events"
 import { OnUserRegisteredAsync } from "../application/on-widget-question"
-import { OnUserPasswordlessLoginedByTokenSync } from "../application/on-user-passwordless-logined-by-token-sync"
+import { OnUserPasswordlessCodeByEmailRequestedSync } from "../application/on-user-passwordless-code-by-email-requested-sync"
 
 export function initOrchestratorService(
   syncEventBusProvider: EventBusProvider,
@@ -12,8 +12,8 @@ export function initOrchestratorService(
 ): void {
   // . Sync
   syncEventBusProvider.subscribe(
-    UserPasswordlessLoginedByToken,
-    OnUserPasswordlessLoginedByTokenSync,
+    UserPasswordlessCodeByEmailRequested,
+    OnUserPasswordlessCodeByEmailRequestedSync,
   )
   // . Async
   asyncEventBusProvider.subscribe(UserRegistered, OnUserRegisteredAsync)

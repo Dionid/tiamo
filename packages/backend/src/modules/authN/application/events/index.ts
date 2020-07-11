@@ -14,7 +14,7 @@ export class UserApprovedEmailByToken extends IntegrationEvent {
   }
 }
 
-export class UserPasswordlessLoginedByToken extends IntegrationEvent {
+export class UserPasswordlessCodeByEmailRequested extends IntegrationEvent {
   constructor(
     public readonly userId: UserId,
     public readonly token: string,
