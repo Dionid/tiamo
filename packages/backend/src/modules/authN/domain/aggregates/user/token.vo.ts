@@ -7,7 +7,7 @@ export interface TokenProps {
   createdAt: Date
   updatedAt: Date
   tempCode: string
-  jwtToken: string | null
+  jwtToken?: string
   active: boolean
   deactivatedAt: Date | null
 }
@@ -19,10 +19,10 @@ export class Token extends ValueObject<TokenProps> {
     return Result.ok(new Token(props))
   }
 
-  public async releaseNewJwtToken(): EitherResultP<Token> {
+  public async setJWTToken(token: string): EitherResultP<Token> {
     return Token.create({
       ...this.props,
-      jwtToken: v4(),
+      jwtToken: token,
     })
   }
 
@@ -51,21 +51,6 @@ export class TokenList extends ValueObject<Token[]> {
     // TODO. Validate
     // ...
     return Result.ok(new TokenList(props))
-  }
-
-  public async releaseNewJwtToken(token: Token): EitherResultP<TokenList> {
-    const newToken = await token.releaseNewJwtToken()
-    if (newToken.isError()) {
-      return Result.error(newToken.error)
-    }
-    return TokenList.create(
-      this.props.map((t) => {
-        if (t.equals(token)) {
-          return newToken.value
-        }
-        return t
-      }),
-    )
   }
 
   public getActiveToken(): Token | undefined {

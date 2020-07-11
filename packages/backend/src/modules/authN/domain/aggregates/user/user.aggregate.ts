@@ -4,10 +4,11 @@ import { OmitAndModify } from "@dddl/core/dist/common"
 import { Token, TokenList } from "./token.vo"
 import { Email, EmailStatus } from "./email.vo"
 import { UserCreated } from "./user.events"
-import { EitherResult, EitherResultP, Result } from "@dddl/core/dist/rop"
+import { EitherResultP, Result } from "@dddl/core/dist/rop"
 import { v4 } from "uuid"
 import { AuthUserModel } from "../../../../../applications/common/adapters/dal/schema/models"
 import { CriticalErr, InvalidDataErr } from "@dddl/core/dist/errors"
+import * as jwt from "jsonwebtoken"
 
 export type UserState = OmitAndModify<
   AuthUserModel,
@@ -113,7 +114,10 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     return Result.ok(newToken.value)
   }
 
-  public async acceptTempCodeAndReleaseJWTToken(tempCode: string): EitherResultP {
+  public async acceptTempCodeAndReleaseJWTToken(
+    secret: string,
+    tempCode: string,
+  ): EitherResultP {
     // . Get currently active token
     const activeToken = this.state.tokenList.getActiveToken()
     if (!activeToken) {
@@ -126,14 +130,38 @@ export class User extends AggregateRootWithState<UserId, UserState> {
       return Result.error(new InvalidDataErr(`Code isn't correct`))
     }
 
-    // . Release new jwtToken
-    const newTokenListRes = await this.state.tokenList.releaseNewJwtToken(activeToken)
-    if (newTokenListRes.isError()) {
-      return Result.error(newTokenListRes.error)
+    // . Create jwt token
+    const token = jwt.sign(
+      {
+        sub: this.id.toValue(),
+        "https://hasura.io/jwt/claims": {
+          "x-hasura-allowed-roles": ["user"],
+          "x-hasura-default-role": "user",
+          "x-hasura-user-id": this.id.toValue(),
+        },
+      },
+      secret,
+    )
+
+    // . Set it to active token
+    const newActiveTokenRes = await activeToken.setJWTToken(token)
+    if (newActiveTokenRes.isError()) {
+      return Result.error(newActiveTokenRes.error)
     }
 
     // . Set new tokenList
-    this.state.tokenList = newTokenListRes.value
+    const tokenListRes = await TokenList.create(
+      this.state.tokenList.props.map((t: Token) => {
+        if (t.props.tempCode === newActiveTokenRes.value.props.tempCode) {
+          return newActiveTokenRes.value
+        }
+        return t
+      }),
+    )
+    if (tokenListRes.isError()) {
+      return Result.error(tokenListRes.error)
+    }
+    this.state.tokenList = tokenListRes.value
 
     // . Return success
     return Result.oku()

@@ -41,7 +41,10 @@ export class LoginByPasswordlessCode
     }
 
     // . Accept code and release new JWT token
-    const res = await userRes.value.acceptTempCodeAndReleaseJWTToken(code)
+    const res = await userRes.value.acceptTempCodeAndReleaseJWTToken(
+      "6f0d48d7-697b-4476-a0fb-7245cc5a005d",
+      code,
+    )
     if (res.isError()) {
       return Result.error(res.error)
     }
