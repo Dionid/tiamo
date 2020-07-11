@@ -1,9 +1,11 @@
 import { AuthUser } from "./db-introspection"
 import { Model } from "objection"
 
+type JSONObject = Record<string, string | number | boolean | undefined | null>
+
 export interface AuthUserModel extends AuthUser {
-  tokenList: Record<string, string | number | boolean | null>[]
-  emailList: Record<string, string | number | boolean | null>[]
+  tokenList: JSONObject[]
+  emailList: JSONObject[]
 }
 
 export class AuthUserOModel extends Model implements AuthUserModel {
@@ -12,8 +14,8 @@ export class AuthUserOModel extends Model implements AuthUserModel {
   updatedAt!: Date
   lastSeenAt!: Date
   deletedAt!: Date | null
-  tokenList!: Record<string, string | number | boolean | null>[]
-  emailList!: Record<string, string | number | boolean | null>[]
+  tokenList!: JSONObject[]
+  emailList!: JSONObject[]
 
   static get tableName(): string {
     return "auth_user"

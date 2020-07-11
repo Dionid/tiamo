@@ -5,7 +5,8 @@ import { InvalidDataErr, PublicErr } from "@dddl/core/dist/errors"
 export interface TokenProps {
   createdAt: Date
   updatedAt: Date
-  value: string
+  tempCode: string
+  jwtToken: string | null
   active: boolean
   deactivatedAt: Date | null
 }

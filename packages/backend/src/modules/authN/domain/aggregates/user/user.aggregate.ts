@@ -95,9 +95,10 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     const newToken = await Token.create({
       createdAt: new Date(),
       updatedAt: new Date(),
-      value: v4(),
+      tempCode: v4(),
       active: true,
       deactivatedAt: null,
+      jwtToken: "",
     })
     if (newToken.isError()) {
       return Result.error(newToken.error)

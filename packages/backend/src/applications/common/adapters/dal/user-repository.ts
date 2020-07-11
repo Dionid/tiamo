@@ -78,12 +78,14 @@ class UserAggregateMapper {
     if (model.tokenList) {
       for (let i = 0; i < model.tokenList.length; i++) {
         const token = model.tokenList[i]
+        const { createdAt, updatedAt, value, active, deactivatedAt, jwtToken } = token
         const tokenRes = await Token.create({
-          createdAt: token.createdAt ? new Date(token.createdAt as string) : new Date(),
-          updatedAt: token.updatedAt ? new Date(token.updatedAt as string) : new Date(),
-          value: token.value as string,
-          active: token.active as boolean,
-          deactivatedAt: new Date(token.deactivatedAt as string),
+          createdAt: createdAt ? new Date(createdAt as string) : new Date(),
+          updatedAt: updatedAt ? new Date(updatedAt as string) : new Date(),
+          tempCode: value as string,
+          active: active as boolean,
+          deactivatedAt: new Date(deactivatedAt as string),
+          jwtToken: jwtToken as string,
         })
         if (tokenRes.isError()) {
           return Result.error(tokenRes.error)

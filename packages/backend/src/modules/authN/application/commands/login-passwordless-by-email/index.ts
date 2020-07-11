@@ -9,7 +9,6 @@ import {
   UserRepository,
 } from "../../../domain/repositories"
 import { UserPasswordlessLoginedByToken } from "../../events"
-import { User } from "../../../domain/aggregates/user/user.aggregate"
 import { InvalidDataErr } from "@dddl/core/dist/errors"
 
 export class LoginPasswordlessByEmail
@@ -48,7 +47,7 @@ export class LoginPasswordlessByEmail
       ...userRes.value.domainEvents,
       new UserPasswordlessLoginedByToken(
         userRes.value.id,
-        tokenRes.value.props.value,
+        tokenRes.value.props.tempCode,
         req.data.email,
       ),
     ])
