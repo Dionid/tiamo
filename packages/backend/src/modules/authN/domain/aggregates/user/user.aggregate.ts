@@ -37,17 +37,18 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     // . Validate
     // ...
 
+    // . Create email
     const emailOrFail = await Email.create({
       value: props.email,
       status: EmailStatus.activating,
       approved: false,
       token: v4(),
     })
-
     if (emailOrFail.isError()) {
       return Result.combineErrorAndFlat(emailOrFail)
     }
 
+    // . Create token
     const tokenListOrFail = await TokenList.create([])
     if (tokenListOrFail.isError()) {
       return Result.error(tokenListOrFail.error)
@@ -62,30 +63,39 @@ export class User extends AggregateRootWithState<UserId, UserState> {
       emailList: [emailOrFail.value],
     }
 
+    // . Return User
     return User.create(props.id, userProps)
   }
 
   async approveAndActivateEmail(email: string): EitherResultP {
+    // . Find email
     const emailIndex = this.state.emailList.findIndex((em) => em.props.value === email)
     const em = this.state.emailList[emailIndex]
+    // . If no email, than there is a problem
     if (!em) {
       return Result.error(new InvalidDataErr(`There is no email like: ${email}`))
     }
+    // . Approve email
     const approvedEmailRes = await em.approve()
     if (approvedEmailRes.isError()) {
       return Result.error(approvedEmailRes.error)
     }
+    // . Activate email
     const approvedAndActivatedEmailRes = await approvedEmailRes.value.activate()
     if (approvedAndActivatedEmailRes.isError()) {
       return Result.error(approvedAndActivatedEmailRes.error)
     }
+    // . Set new email
     this.state.emailList[emailIndex] = approvedAndActivatedEmailRes.value
+    // . Return success
     return Result.oku()
   }
 
   async releaseNewToken(): EitherResultP<Token> {
+    // . Get active token
     const activeToken = this.state.tokenList.getActiveToken()
     if (activeToken) {
+      // . Make it deactivated
       const res = await this.state.tokenList.deactivateActiveToken(activeToken)
       if (res.isError()) {
         return Result.error(res.error)
@@ -93,6 +103,7 @@ export class User extends AggregateRootWithState<UserId, UserState> {
       this.state.tokenList = res.value
     }
 
+    // . Create new token
     const newToken = await Token.create({
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -105,12 +116,14 @@ export class User extends AggregateRootWithState<UserId, UserState> {
       return Result.error(newToken.error)
     }
 
+    // . Add new token to list
     const newTokenList = await this.state.tokenList.addToken(newToken.value)
     if (newTokenList.isError()) {
       return Result.error(newTokenList.error)
     }
     this.state.tokenList = newTokenList.value
 
+    // . Return success
     return Result.ok(newToken.value)
   }
 
