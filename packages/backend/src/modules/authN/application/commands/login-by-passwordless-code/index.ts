@@ -1,4 +1,4 @@
-import { CommandHandler, HybridHandler, HybridRequest } from "@dddl/core/dist/cqrs"
+import { HybridHandler, HybridRequest } from "@dddl/core/dist/cqrs"
 import {
   LoginByPasswordlessCodeCommand,
   LoginByPasswordlessCodeCommandResponse,

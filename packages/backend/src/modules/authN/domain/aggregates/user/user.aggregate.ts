@@ -130,6 +130,13 @@ export class User extends AggregateRootWithState<UserId, UserState> {
       return Result.error(new InvalidDataErr(`Code isn't correct`))
     }
 
+    // . If jwt token already exist than stop
+    if (activeToken.props.jwtToken) {
+      return Result.error(
+        new InvalidDataErr(`JWT token was already used. Login to get new one`),
+      )
+    }
+
     // . Create jwt token
     const token = jwt.sign(
       {
