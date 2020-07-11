@@ -56,6 +56,8 @@ import { SendPasswordlessLoginCodeCommand } from "../../../modules/notifications
 import { SendPasswordlessLoginCode } from "../../../modules/notifications/application/command/send-passwordless-login-code"
 import { RequestPasswordlessCodeByEmailCommand } from "../../../modules/authN/application/commands/request-passwordless-code-by-email/command"
 import { RequestPasswordlessCodeByEmail } from "../../../modules/authN/application/commands/request-passwordless-code-by-email"
+import { LoginByPasswordlessCode } from "../../../modules/authN/application/commands/login-by-passwordless-code"
+import { LoginByPasswordlessCodeCommand } from "../../../modules/authN/application/commands/login-by-passwordless-code/command"
 
 async function main() {
   // ENV
@@ -160,6 +162,7 @@ async function main() {
   cqBus.subscribe(ApproveEmailByTokenCommand, ApproveEmailByToken)
   cqBus.subscribe(RequestPasswordlessCodeByEmailCommand, RequestPasswordlessCodeByEmail)
   cqBus.subscribe(SendPasswordlessLoginCodeCommand, SendPasswordlessLoginCode)
+  cqBus.subscribe(LoginByPasswordlessCodeCommand, LoginByPasswordlessCode)
 
   // Orchestration
   initOrchestratorService(syncEventBusProvider, asyncEventBusProvider)

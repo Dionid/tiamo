@@ -1,5 +1,5 @@
 import { ValueObject } from "@dddl/core/dist/domain"
-import { EitherResult, EitherResultP, Result } from "@dddl/core/dist/rop"
+import { EitherResultP, Result } from "@dddl/core/dist/rop"
 import { InvalidDataErr } from "@dddl/core/dist/errors"
 import { v4 } from "uuid"
 

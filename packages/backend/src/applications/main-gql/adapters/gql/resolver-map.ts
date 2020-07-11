@@ -5,7 +5,15 @@ import { UseCaseReqMeta } from "@dddl/core/dist/usecase"
 import { v4 } from "uuid"
 import { ApproveEmailByTokenCommand } from "../../../../modules/authN/application/commands/approve-token/command"
 import { RequestPasswordlessCodeByEmailCommand } from "../../../../modules/authN/application/commands/request-passwordless-code-by-email/command"
-import { ApproveEmailByTokenInput, RegisterUserInput } from "./types"
+import {
+  LoginByPasswordlessCodeResponse,
+  MutationApproveEmailByTokenArgs,
+  MutationLoginByPasswordlessCodeArgs,
+  MutationRegisterUserArgs,
+  MutationRequestPasswordlessCodeByEmailArgs,
+} from "./types"
+import { LoginByPasswordlessCodeCommand } from "../../../../modules/authN/application/commands/login-by-passwordless-code/command"
+import { CriticalErr } from "@dddl/core/dist/errors"
 
 export interface ResolversCtx {
   cqBus: CQBus
@@ -19,9 +27,12 @@ export const resolvers: IResolvers<any, ResolversCtx> = {
   Mutation: {
     registerUser: async (
       root,
-      { req }: { req: RegisterUserInput },
+      { req }: MutationRegisterUserArgs,
       ctx,
     ): Promise<Result> => {
+      if (!req) {
+        throw new CriticalErr(`No input`)
+      }
       const userId = v4()
       const res = await ctx.cqBus.handle(
         new RegisterUserPasswordlessCommand(req.email, userId),
@@ -39,9 +50,12 @@ export const resolvers: IResolvers<any, ResolversCtx> = {
     },
     approveEmailByToken: async (
       root,
-      { req }: { req: ApproveEmailByTokenInput },
+      { req }: MutationApproveEmailByTokenArgs,
       ctx,
     ): Promise<Result> => {
+      if (!req) {
+        throw new CriticalErr(`No input`)
+      }
       const res = await ctx.cqBus.handle(
         new ApproveEmailByTokenCommand(req.email, req.token),
         new UseCaseReqMeta({}),
@@ -54,7 +68,14 @@ export const resolvers: IResolvers<any, ResolversCtx> = {
         success: true,
       }
     },
-    loginPasswordlessByEmail: async (root, { req }, ctx): Promise<Result> => {
+    requestPasswordlessCodeByEmail: async (
+      root,
+      { req }: MutationRequestPasswordlessCodeByEmailArgs,
+      ctx,
+    ): Promise<Result> => {
+      if (!req) {
+        throw new CriticalErr(`No input`)
+      }
       const res = await ctx.cqBus.handle(
         new RequestPasswordlessCodeByEmailCommand(req.email),
         new UseCaseReqMeta({}),
@@ -65,6 +86,26 @@ export const resolvers: IResolvers<any, ResolversCtx> = {
       }
       return {
         success: true,
+      }
+    },
+    loginByPasswordlessCode: async (
+      root,
+      { req }: MutationLoginByPasswordlessCodeArgs,
+      ctx,
+    ): Promise<LoginByPasswordlessCodeResponse> => {
+      if (!req) {
+        throw new CriticalErr(`No input`)
+      }
+      const res = await ctx.cqBus.handle<LoginByPasswordlessCodeResponse>(
+        new LoginByPasswordlessCodeCommand(req.code, req.email),
+        new UseCaseReqMeta({}),
+      )
+      if (res.isError()) {
+        console.error(res)
+        throw res.error
+      }
+      return {
+        token: res.value.token,
       }
     },
   },
