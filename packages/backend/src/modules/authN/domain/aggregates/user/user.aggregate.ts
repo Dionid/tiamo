@@ -4,10 +4,10 @@ import { OmitAndModify } from "@dddl/core/dist/common"
 import { Token, TokenList } from "./token.vo"
 import { Email, EmailStatus } from "./email.vo"
 import { UserCreated } from "./user.events"
-import { EitherResultP, Result } from "@dddl/core/dist/rop"
+import { EitherResult, EitherResultP, Result } from "@dddl/core/dist/rop"
 import { v4 } from "uuid"
 import { AuthUserModel } from "../../../../../applications/common/adapters/dal/schema/models"
-import { InvalidDataErr } from "@dddl/core/dist/errors"
+import { CriticalErr, InvalidDataErr } from "@dddl/core/dist/errors"
 
 export type UserState = OmitAndModify<
   AuthUserModel,
@@ -111,5 +111,31 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     this.state.tokenList = newTokenList.value
 
     return Result.ok(newToken.value)
+  }
+
+  public async acceptTempCodeAndReleaseJWTToken(tempCode: string): EitherResultP {
+    // . Get currently active token
+    const activeToken = this.state.tokenList.getActiveToken()
+    if (!activeToken) {
+      return Result.error(
+        new CriticalErr(`There is no active token on user: ${this.id.value}`),
+      )
+    }
+    // . Check code
+    if (tempCode !== activeToken.props.tempCode) {
+      return Result.error(new InvalidDataErr(`Code isn't correct`))
+    }
+
+    // . Release new jwtToken
+    const newTokenListRes = await this.state.tokenList.releaseNewJwtToken(activeToken)
+    if (newTokenListRes.isError()) {
+      return Result.error(newTokenListRes.error)
+    }
+
+    // . Set new tokenList
+    this.state.tokenList = newTokenListRes.value
+
+    // . Return success
+    return Result.oku()
   }
 }

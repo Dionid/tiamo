@@ -1,6 +1,7 @@
 import { ValueObject } from "@dddl/core/dist/domain"
-import { EitherResultP, Result } from "@dddl/core/dist/rop"
-import { InvalidDataErr, PublicErr } from "@dddl/core/dist/errors"
+import { EitherResult, EitherResultP, Result } from "@dddl/core/dist/rop"
+import { InvalidDataErr } from "@dddl/core/dist/errors"
+import { v4 } from "uuid"
 
 export interface TokenProps {
   createdAt: Date
@@ -16,6 +17,13 @@ export class Token extends ValueObject<TokenProps> {
     // TODO. Add validations
     // ...
     return Result.ok(new Token(props))
+  }
+
+  public async releaseNewJwtToken(): EitherResultP<Token> {
+    return Token.create({
+      ...this.props,
+      jwtToken: v4(),
+    })
   }
 
   public async deactivate(): EitherResultP<Token> {
@@ -43,6 +51,21 @@ export class TokenList extends ValueObject<Token[]> {
     // TODO. Validate
     // ...
     return Result.ok(new TokenList(props))
+  }
+
+  public async releaseNewJwtToken(token: Token): EitherResultP<TokenList> {
+    const newToken = await token.releaseNewJwtToken()
+    if (newToken.isError()) {
+      return Result.error(newToken.error)
+    }
+    return TokenList.create(
+      this.props.map((t) => {
+        if (t.equals(token)) {
+          return newToken.value
+        }
+        return t
+      }),
+    )
   }
 
   public getActiveToken(): Token | undefined {
