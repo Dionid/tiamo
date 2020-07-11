@@ -43,12 +43,19 @@ import { ResolversCtx } from "../adapters/gql/resolver-map"
 import { UserORepository } from "../../common/adapters/dal/user-repository"
 import { MailgunNotificationSender } from "../../../modules/notifications/adapters/mailgun"
 import Mailgun from "mailgun-js"
-import { NOTIFICATION_SENDER_DI_TOKEN } from "../../../modules/notifications/application/notificationservice"
+import {
+  NOTIFICATION_SENDER_DI_TOKEN,
+  NotificationSender,
+} from "../../../modules/notifications/application/notificationservice"
 import { SendRegisterApprovalEmailCommand } from "../../../modules/notifications/application/command/send-register-approval-email/command"
 import { SendRegisterApprovalEmail } from "../../../modules/notifications/application/command/send-register-approval-email"
 import { initOrchestratorService } from "../../../modules/orchestration/export"
 import { ApproveEmailByToken } from "../../../modules/authN/application/commands/approve-token"
 import { ApproveEmailByTokenCommand } from "../../../modules/authN/application/commands/approve-token/command"
+import { SendPasswordlessLoginTokenCommand } from "../../../modules/notifications/application/command/send-passwordless-login-token/command"
+import { SendPasswordlessLoginToken } from "../../../modules/notifications/application/command/send-passwordless-login-token"
+import { LoginPasswordlessByEmailCommand } from "../../../modules/authN/application/commands/login-passwordless-by-email/command"
+import { LoginPasswordlessByEmail } from "../../../modules/authN/application/commands/login-passwordless-by-email"
 
 async function main() {
   // ENV
@@ -128,7 +135,10 @@ async function main() {
     apiKey: mailgunApiKey,
     domain: mailgunDomain,
   })
-  const mailgunService = new MailgunNotificationSender(mailgunClient, logger)
+  const mailgunService: NotificationSender = new MailgunNotificationSender(
+    mailgunClient,
+    logger,
+  )
   Container.set({
     value: mailgunService,
     global: true,
@@ -148,6 +158,8 @@ async function main() {
   cqBus.subscribe(RegisterUserPasswordlessCommand, RegisterUserPasswordless)
   cqBus.subscribe(SendRegisterApprovalEmailCommand, SendRegisterApprovalEmail)
   cqBus.subscribe(ApproveEmailByTokenCommand, ApproveEmailByToken)
+  cqBus.subscribe(LoginPasswordlessByEmailCommand, LoginPasswordlessByEmail)
+  cqBus.subscribe(SendPasswordlessLoginTokenCommand, SendPasswordlessLoginToken)
 
   // Orchestration
   initOrchestratorService(syncEventBusProvider, asyncEventBusProvider)

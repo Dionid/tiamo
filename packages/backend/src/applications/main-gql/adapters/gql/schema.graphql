@@ -17,7 +17,12 @@ input ApproveEmailByTokenInput {
     email: String!
 }
 
+input LoginPasswordlessByEmailInput {
+    email: String!
+}
+
 type Mutation {
     registerUser(req: RegisterUserInput): MutationResponse
     approveEmailByToken(req: ApproveEmailByTokenInput): MutationResponse
+    loginPasswordlessByEmail(req: LoginPasswordlessByEmailInput): MutationResponse
 }

@@ -4,6 +4,8 @@ import { RegisterUserPasswordlessCommand } from "../../../../modules/authN/appli
 import { UseCaseReqMeta } from "@dddl/core/dist/usecase"
 import { v4 } from "uuid"
 import { ApproveEmailByTokenCommand } from "../../../../modules/authN/application/commands/approve-token/command"
+import { LoginPasswordlessByEmailCommand } from "../../../../modules/authN/application/commands/login-passwordless-by-email/command"
+import { ApproveEmailByTokenInput, RegisterUserInput } from "./types"
 
 export interface ResolversCtx {
   cqBus: CQBus
@@ -15,7 +17,11 @@ interface Result {
 
 export const resolvers: IResolvers<any, ResolversCtx> = {
   Mutation: {
-    registerUser: async (root, { req }, ctx): Promise<Result> => {
+    registerUser: async (
+      root,
+      { req }: { req: RegisterUserInput },
+      ctx,
+    ): Promise<Result> => {
       const userId = v4()
       const res = await ctx.cqBus.handle(
         new RegisterUserPasswordlessCommand(req.email, userId),
@@ -31,9 +37,26 @@ export const resolvers: IResolvers<any, ResolversCtx> = {
         success: true,
       }
     },
-    approveEmailByToken: async (root, { req }, ctx): Promise<Result> => {
+    approveEmailByToken: async (
+      root,
+      { req }: { req: ApproveEmailByTokenInput },
+      ctx,
+    ): Promise<Result> => {
       const res = await ctx.cqBus.handle(
         new ApproveEmailByTokenCommand(req.email, req.token),
+        new UseCaseReqMeta({}),
+      )
+      if (res.isError()) {
+        console.error(res)
+        throw res.error
+      }
+      return {
+        success: true,
+      }
+    },
+    loginPasswordlessByEmail: async (root, { req }, ctx): Promise<Result> => {
+      const res = await ctx.cqBus.handle(
+        new LoginPasswordlessByEmailCommand(req.email),
         new UseCaseReqMeta({}),
       )
       if (res.isError()) {
