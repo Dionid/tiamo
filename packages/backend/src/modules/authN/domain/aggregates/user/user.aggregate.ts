@@ -134,6 +134,7 @@ export class User extends AggregateRootWithState<UserId, UserState> {
   }
 
   public async acceptTempCodeAndReleaseJWTToken(
+    expiresIn: string,
     secret: string,
     tempCode: string,
   ): EitherResultP {
@@ -160,6 +161,7 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     const token = jwt.sign(
       {
         sub: this.id.toValue(),
+        // TODO. Think where to move this
         "https://hasura.io/jwt/claims": {
           "x-hasura-allowed-roles": ["user"],
           "x-hasura-default-role": "user",
@@ -167,6 +169,7 @@ export class User extends AggregateRootWithState<UserId, UserState> {
         },
       },
       secret,
+      { expiresIn },
     )
 
     // . Set it to active token
