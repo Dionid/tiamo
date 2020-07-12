@@ -115,7 +115,6 @@ export class User extends AggregateRootWithState<UserId, UserState> {
       createdAt: new Date(),
       updatedAt: new Date(),
       tempCode: v4(),
-      active: true,
       deactivatedAt: null,
       jwtToken: "",
     })

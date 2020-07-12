@@ -78,7 +78,7 @@ class UserAggregateMapper {
     if (model.tokenList) {
       for (let i = 0; i < model.tokenList.length; i++) {
         const token = model.tokenList[i]
-        const { createdAt, updatedAt, value, active, deactivatedAt, jwtToken } = token
+        const { createdAt, updatedAt, value, deactivatedAt, jwtToken } = token
         let { tempCode } = token
         if (value && !tempCode) {
           tempCode = value
@@ -90,7 +90,6 @@ class UserAggregateMapper {
           createdAt: new Date(createdAt || new Date()),
           updatedAt: new Date(updatedAt || new Date()),
           tempCode: tempCode,
-          active: active,
           deactivatedAt: new Date(deactivatedAt || new Date()),
           jwtToken: jwtToken,
         })

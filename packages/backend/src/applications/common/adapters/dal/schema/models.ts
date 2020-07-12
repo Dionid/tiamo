@@ -22,6 +22,7 @@ export type MergeModelAndDbJsonProps<Model, DBProps> = Modify<
   DBProps
 
 interface TokenDBDelta {
+  active?: boolean
   value?: string
   tempCode?: string
   createdAt?: string

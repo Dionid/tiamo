@@ -1,14 +1,12 @@
 import { ValueObject } from "@dddl/core/dist/domain"
 import { EitherResultP, Result } from "@dddl/core/dist/rop"
 import { InvalidDataErr } from "@dddl/core/dist/errors"
-import { v4 } from "uuid"
 
 export interface TokenProps {
   createdAt: Date
   updatedAt: Date
   tempCode: string
   jwtToken?: string
-  active: boolean
   deactivatedAt: Date | null
 }
 
@@ -17,6 +15,10 @@ export class Token extends ValueObject<TokenProps> {
     // TODO. Add validations
     // ...
     return Result.ok(new Token(props))
+  }
+
+  get isActive() {
+    return !!this.props.deactivatedAt
   }
 
   public async setJWTToken(token: string): EitherResultP<Token> {
@@ -36,7 +38,6 @@ export class Token extends ValueObject<TokenProps> {
       new Token({
         ...this.props,
         deactivatedAt: new Date(),
-        active: false,
       }),
     )
   }
@@ -54,7 +55,7 @@ export class TokenList extends ValueObject<Token[]> {
   }
 
   public getActiveToken(): Token | undefined {
-    const token = this.props.find((token) => token.props.active)
+    const token = this.props.find((token) => token.isActive)
     return token
   }
 
