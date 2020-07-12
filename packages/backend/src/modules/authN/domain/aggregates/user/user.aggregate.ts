@@ -8,7 +8,6 @@ import { EitherResultP, Result } from "@dddl/core/dist/rop"
 import { v4 } from "uuid"
 import { AuthUserModel } from "../../../../../applications/common/adapters/dal/schema/models"
 import { CriticalErr, InvalidDataErr } from "@dddl/core/dist/errors"
-import * as jwt from "jsonwebtoken"
 import { EmailAlreadyApprovedErr } from "./errors"
 import { JwtTokenCreator } from "../../../application/jwtTokenCreator"
 

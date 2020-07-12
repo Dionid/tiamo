@@ -8,3 +8,4 @@ Authentication and Authorization services in one click!
 Also a good starter-kit for new Node.js & TypeScript project.
 
 Made on [Domain Driven Design Light (DDDL) Framework](https://github.com/Dionid/dddl).
+
