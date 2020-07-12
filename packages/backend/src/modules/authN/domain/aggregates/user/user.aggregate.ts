@@ -10,6 +10,7 @@ import { AuthUserModel } from "../../../../../applications/common/adapters/dal/s
 import { CriticalErr, InvalidDataErr } from "@dddl/core/dist/errors"
 import * as jwt from "jsonwebtoken"
 import { EmailAlreadyApprovedErr } from "./errors"
+import { JwtTokenCreator } from "../../../application/jwtTokenCreator"
 
 export type UserState = OmitAndModify<
   AuthUserModel,
@@ -125,9 +126,8 @@ export class User extends AggregateRootWithState<UserId, UserState> {
   }
 
   public async acceptTempCodeAndReleaseJWTToken(
-    expiresIn: string,
-    secret: string,
     tempCode: string,
+    tokenCreator: JwtTokenCreator,
   ): EitherResultP {
     // . Get currently active token
     const activeTokens = this.state.tokenList.getActiveTokens()
@@ -151,19 +151,7 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     }
 
     // . Create jwt token
-    const token = jwt.sign(
-      {
-        sub: this.id.toValue(),
-        // TODO. Think where to move this
-        "https://hasura.io/jwt/claims": {
-          "x-hasura-allowed-roles": ["user"], // TODO. This must come from authZ
-          "x-hasura-default-role": "user", // TODO. This must come from authZ
-          "x-hasura-user-id": this.id.toValue(),
-        },
-      },
-      secret,
-      { expiresIn },
-    )
+    const token = tokenCreator(this.id.toValue())
 
     // . Set it to active token
     const newActiveTokenRes = await activeToken.setJWTToken(token)

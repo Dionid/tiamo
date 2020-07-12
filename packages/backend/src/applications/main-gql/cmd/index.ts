@@ -58,6 +58,16 @@ import { RequestPasswordlessCodeByEmailCommand } from "../../../modules/authN/ap
 import { RequestPasswordlessCodeByEmail } from "../../../modules/authN/application/commands/request-passwordless-code-by-email"
 import { LoginByPasswordlessCode } from "../../../modules/authN/application/commands/login-by-passwordless-code"
 import { LoginByPasswordlessCodeCommand } from "../../../modules/authN/application/commands/login-by-passwordless-code/command"
+import * as jwt from "jsonwebtoken"
+import { JWT_CREATOR_DI_TOKEN } from "../../../modules/authN/application/jwtTokenCreator"
+
+interface Config {
+  connectionString: string
+  mailgunApiKey: string
+  mailgunDomain: string
+  jwtGenSecret: string
+  jwtExpires: string
+}
 
 async function main() {
   // ENV
@@ -76,6 +86,39 @@ async function main() {
   if (!mailgunDomain) {
     throw new Error("Env variable 'MAILGUN_DOMAIN' is required")
   }
+  const jwtGenSecret = process.env.JWT_GEN_SECRET
+  if (!jwtGenSecret) {
+    throw new Error("Env variable 'JWT_GEN_SECRET' is required")
+  }
+  const jwtExpires = process.env.JWT_EXPIRES
+  if (!jwtExpires) {
+    throw new Error("Env variable 'JWT_EXPIRES' is required")
+  }
+  const config: Config = {
+    connectionString,
+    mailgunApiKey,
+    mailgunDomain,
+    jwtGenSecret,
+    jwtExpires,
+  }
+
+  // Utils
+  const createJwtToken = (id: string): string => {
+    return jwt.sign(
+      {
+        sub: id,
+        "https://hasura.io/jwt/claims": {
+          "x-hasura-allowed-roles": ["user"], // TODO. This must come from authZ
+          "x-hasura-default-role": "user", // TODO. This must come from authZ
+          "x-hasura-user-id": id,
+        },
+      },
+      config.jwtGenSecret,
+      { expiresIn: jwtExpires },
+    )
+  }
+  Container.set({ id: JWT_CREATOR_DI_TOKEN, value: createJwtToken, global: true })
+
   // Logger
   const logger = winston.createLogger({
     format: format.combine(

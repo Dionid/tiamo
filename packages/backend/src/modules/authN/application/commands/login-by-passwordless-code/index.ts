@@ -12,6 +12,7 @@ import {
   UserRepository,
 } from "../../../domain/repositories"
 import { CriticalErr, InvalidDataErr } from "@dddl/core/dist/errors"
+import { JWT_CREATOR_DI_TOKEN, JwtTokenCreator } from "../../jwtTokenCreator"
 
 export class LoginByPasswordlessCode
   implements
@@ -22,6 +23,7 @@ export class LoginByPasswordlessCode
   constructor(
     @Inject(EVENT_BUS_DI_TOKEN) private eventBus: EventBus,
     @Inject(USER_REPOSITORY_DI_TOKEN) private userRepo: UserRepository,
+    @Inject(JWT_CREATOR_DI_TOKEN) private tokenCreator: JwtTokenCreator,
   ) {}
 
   async handle(
@@ -45,9 +47,8 @@ export class LoginByPasswordlessCode
 
     // . Accept code and release new JWT token
     const res = await userRes.value.acceptTempCodeAndReleaseJWTToken(
-      "1h", // TODO. Move to config
-      "6f0d48d7-697b-4476-a0fb-7245cc5a005d", // TODO. Move to config
       code,
+      this.tokenCreator,
     )
     if (res.isError()) {
       return Result.error(res.error)
