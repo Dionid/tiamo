@@ -90,7 +90,8 @@ class UserAggregateMapper {
           createdAt: new Date(createdAt || new Date()),
           updatedAt: new Date(updatedAt || new Date()),
           tempCode: tempCode,
-          deactivatedAt: new Date(deactivatedAt || new Date()),
+          deactivatedAt:
+            deactivatedAt === null ? null : new Date(deactivatedAt || new Date()),
           jwtToken: jwtToken,
         })
         if (tokenRes.isError()) {

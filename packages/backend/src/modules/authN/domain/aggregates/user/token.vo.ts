@@ -18,7 +18,7 @@ export class Token extends ValueObject<TokenProps> {
   }
 
   get isActive(): boolean {
-    return !!this.props.deactivatedAt
+    return !this.props.deactivatedAt
   }
 
   public async setJWTToken(token: string): EitherResultP<Token> {
@@ -29,7 +29,7 @@ export class Token extends ValueObject<TokenProps> {
   }
 
   public async deactivate(): EitherResultP<Token> {
-    if (this.props.deactivatedAt) {
+    if (!this.isActive) {
       return Result.error(
         new InvalidDataErr("Can't deactivate already deactivated token!"),
       )
