@@ -13,3 +13,13 @@ export class UserApprovedEmailByToken extends IntegrationEvent {
     super(v4())
   }
 }
+
+export class UserPasswordlessCodeByEmailRequested extends IntegrationEvent {
+  constructor(
+    public readonly userId: UserId,
+    public readonly token: string,
+    public readonly email: string,
+  ) {
+    super(v4())
+  }
+}

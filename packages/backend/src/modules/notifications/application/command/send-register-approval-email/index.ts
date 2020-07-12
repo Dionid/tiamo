@@ -3,7 +3,7 @@ import { Inject } from "typedi"
 import {
   USER_REPOSITORY_DI_TOKEN,
   UserRepository,
-} from "../../../../auth/domain/repositories"
+} from "../../../../authN/domain/repositories"
 import { EitherResultP, Result } from "@dddl/core/dist/rop"
 import {
   NOTIFICATION_SENDER_DI_TOKEN,

@@ -1,12 +1,12 @@
 import { ValueObject } from "@dddl/core/dist/domain"
 import { EitherResultP, Result } from "@dddl/core/dist/rop"
-import { InvalidDataErr, PublicErr } from "@dddl/core/dist/errors"
+import { CriticalErr, InvalidDataErr } from "@dddl/core/dist/errors"
 
 export interface TokenProps {
   createdAt: Date
   updatedAt: Date
-  value: string
-  active: boolean
+  tempCode: string
+  jwtToken?: string
   deactivatedAt: Date | null
 }
 
@@ -17,8 +17,19 @@ export class Token extends ValueObject<TokenProps> {
     return Result.ok(new Token(props))
   }
 
+  get isActive(): boolean {
+    return !this.props.deactivatedAt
+  }
+
+  public async setJWTToken(token: string): EitherResultP<Token> {
+    return Token.create({
+      ...this.props,
+      jwtToken: token,
+    })
+  }
+
   public async deactivate(): EitherResultP<Token> {
-    if (this.props.deactivatedAt) {
+    if (!this.isActive) {
       return Result.error(
         new InvalidDataErr("Can't deactivate already deactivated token!"),
       )
@@ -27,7 +38,6 @@ export class Token extends ValueObject<TokenProps> {
       new Token({
         ...this.props,
         deactivatedAt: new Date(),
-        active: false,
       }),
     )
   }
@@ -44,12 +54,15 @@ export class TokenList extends ValueObject<Token[]> {
     return Result.ok(new TokenList(props))
   }
 
-  public async getActiveToken(): EitherResultP<Token | undefined> {
-    const token = this.props.find((token) => token.props.active)
-    return Result.ok(token)
+  public getActiveTokens(): Token[] | undefined {
+    return this.props.filter((token) => token.isActive)
   }
 
-  public async deactivateActiveToken(token: Token): EitherResultP<TokenList> {
+  public async deactivateToken(token: Token): EitherResultP<TokenList> {
+    if (!token.isActive) {
+      return Result.error(new CriticalErr(`Token is not active`))
+    }
+
     const result = await token.deactivate()
     if (result.isError()) {
       return Result.error(result.error)
@@ -63,5 +76,9 @@ export class TokenList extends ValueObject<Token[]> {
         return t
       }),
     )
+  }
+
+  public addToken(token: Token): EitherResultP<TokenList> {
+    return TokenList.create([...this.props, token])
   }
 }

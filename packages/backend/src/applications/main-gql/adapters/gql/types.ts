@@ -23,27 +23,51 @@ export type MutationResponse = {
   message?: Maybe<Scalars["String"]>
 }
 
-export type RegisterUserInput = {
+export type RegisterUser = {
   email: Scalars["String"]
 }
 
-export type ApproveEmailByTokenInput = {
+export type ApproveEmailByToken = {
   token: Scalars["String"]
   email: Scalars["String"]
+}
+
+export type RequestPasswordlessCodeByEmail = {
+  email: Scalars["String"]
+}
+
+export type LoginByPasswordlessCode = {
+  email: Scalars["String"]
+  code: Scalars["String"]
+}
+
+export type LoginByPasswordlessCodeResponse = {
+  __typename?: "LoginByPasswordlessCodeResponse"
+  token: Scalars["String"]
 }
 
 export type Mutation = {
   __typename?: "Mutation"
   registerUser?: Maybe<MutationResponse>
   approveEmailByToken?: Maybe<MutationResponse>
+  requestPasswordlessCodeByEmail?: Maybe<MutationResponse>
+  loginByPasswordlessCode?: Maybe<LoginByPasswordlessCodeResponse>
 }
 
 export type MutationRegisterUserArgs = {
-  req?: Maybe<RegisterUserInput>
+  req?: Maybe<RegisterUser>
 }
 
 export type MutationApproveEmailByTokenArgs = {
-  req?: Maybe<ApproveEmailByTokenInput>
+  req?: Maybe<ApproveEmailByToken>
+}
+
+export type MutationRequestPasswordlessCodeByEmailArgs = {
+  req?: Maybe<RequestPasswordlessCodeByEmail>
+}
+
+export type MutationLoginByPasswordlessCodeArgs = {
+  req?: Maybe<LoginByPasswordlessCode>
 }
 
 export type ResolverTypeWrapper<T> = Promise<T> | T
@@ -142,8 +166,11 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars["String"]>
   MutationResponse: ResolverTypeWrapper<MutationResponse>
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>
-  RegisterUserInput: RegisterUserInput
-  ApproveEmailByTokenInput: ApproveEmailByTokenInput
+  RegisterUser: RegisterUser
+  ApproveEmailByToken: ApproveEmailByToken
+  RequestPasswordlessCodeByEmail: RequestPasswordlessCodeByEmail
+  LoginByPasswordlessCode: LoginByPasswordlessCode
+  LoginByPasswordlessCodeResponse: ResolverTypeWrapper<LoginByPasswordlessCodeResponse>
   Mutation: ResolverTypeWrapper<{}>
 }
 
@@ -153,8 +180,11 @@ export type ResolversParentTypes = {
   String: Scalars["String"]
   MutationResponse: MutationResponse
   Boolean: Scalars["Boolean"]
-  RegisterUserInput: RegisterUserInput
-  ApproveEmailByTokenInput: ApproveEmailByTokenInput
+  RegisterUser: RegisterUser
+  ApproveEmailByToken: ApproveEmailByToken
+  RequestPasswordlessCodeByEmail: RequestPasswordlessCodeByEmail
+  LoginByPasswordlessCode: LoginByPasswordlessCode
+  LoginByPasswordlessCodeResponse: LoginByPasswordlessCodeResponse
   Mutation: {}
 }
 
@@ -174,6 +204,14 @@ export type MutationResponseResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType>
 }
 
+export type LoginByPasswordlessCodeResponseResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["LoginByPasswordlessCodeResponse"] = ResolversParentTypes["LoginByPasswordlessCodeResponse"]
+> = {
+  token?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>
+}
+
 export type MutationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Mutation"] = ResolversParentTypes["Mutation"]
@@ -190,11 +228,24 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationApproveEmailByTokenArgs, never>
   >
+  requestPasswordlessCodeByEmail?: Resolver<
+    Maybe<ResolversTypes["MutationResponse"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationRequestPasswordlessCodeByEmailArgs, never>
+  >
+  loginByPasswordlessCode?: Resolver<
+    Maybe<ResolversTypes["LoginByPasswordlessCodeResponse"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationLoginByPasswordlessCodeArgs, never>
+  >
 }
 
 export type Resolvers<ContextType = any> = {
   Query?: QueryResolvers<ContextType>
   MutationResponse?: MutationResponseResolvers<ContextType>
+  LoginByPasswordlessCodeResponse?: LoginByPasswordlessCodeResponseResolvers<ContextType>
   Mutation?: MutationResolvers<ContextType>
 }
 

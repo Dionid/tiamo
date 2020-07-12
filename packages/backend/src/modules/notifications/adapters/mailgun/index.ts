@@ -24,4 +24,20 @@ export class MailgunNotificationSender {
     }
     return Result.oku()
   }
+
+  async sendPasswordlessAuthToken(userEmail: string, token: string): EitherResultP {
+    const data = {
+      from: "Excited User <me@samples.mailgun.org>",
+      to: `${userEmail}`,
+      subject: "Email verification",
+      text: `Hi there! Here is your login url: someurl.ru/login?token=${token}`,
+    }
+    try {
+      const res = await this.client.messages().send(data)
+      this.logger.info(res)
+    } catch (e) {
+      return Result.error(e)
+    }
+    return Result.oku()
+  }
 }

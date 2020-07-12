@@ -69,8 +69,8 @@ describe("Register User paswordless", function () {
         .mockResolvedValue(Result.oku())
       userRepo.save
         .calledWith(
-          new Matcher((user: User) => {
-            return user.id.toValue() === reqUserId
+          new Matcher((u: User) => {
+            return u.id.toValue() === reqUserId
           }),
         )
         .mockResolvedValue(Result.oku())
