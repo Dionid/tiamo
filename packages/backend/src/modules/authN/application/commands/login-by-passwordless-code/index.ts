@@ -25,7 +25,10 @@ export class LoginByPasswordlessCode
   ) {}
 
   async handle(
-    req: HybridRequest<LoginByPasswordlessCodeCommand, Record<any, any>>,
+    req: HybridRequest<
+      LoginByPasswordlessCodeCommand,
+      LoginByPasswordlessCodeCommandResponse
+    >,
   ): EitherResultP<LoginByPasswordlessCodeCommandResponse> {
     const { email, code } = req.data
 
@@ -50,8 +53,12 @@ export class LoginByPasswordlessCode
       return Result.error(res.error)
     }
 
-    // . Get active token
-    const token = await userRes.value.state.tokenList.getActiveToken()
+    // . Get active token by code
+    const tokenList = await userRes.value.state.tokenList.getActiveTokens()
+    if (!tokenList) {
+      return Result.error(new CriticalErr(`No tokenlist in User: ${userRes.value}`))
+    }
+    const token = tokenList.filter((t) => t.props.tempCode === code)[0]
     if (!token) {
       return Result.error(
         new CriticalErr(`Active token doesn't exist on user: ${userRes.value.id}`),

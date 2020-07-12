@@ -1,6 +1,6 @@
 import { ValueObject } from "@dddl/core/dist/domain"
 import { EitherResultP, Result } from "@dddl/core/dist/rop"
-import { InvalidDataErr } from "@dddl/core/dist/errors"
+import { CriticalErr, InvalidDataErr } from "@dddl/core/dist/errors"
 
 export interface TokenProps {
   createdAt: Date
@@ -17,7 +17,7 @@ export class Token extends ValueObject<TokenProps> {
     return Result.ok(new Token(props))
   }
 
-  get isActive() {
+  get isActive(): boolean {
     return !!this.props.deactivatedAt
   }
 
@@ -54,12 +54,15 @@ export class TokenList extends ValueObject<Token[]> {
     return Result.ok(new TokenList(props))
   }
 
-  public getActiveToken(): Token | undefined {
-    const token = this.props.find((token) => token.isActive)
-    return token
+  public getActiveTokens(): Token[] | undefined {
+    return this.props.filter((token) => token.isActive)
   }
 
-  public async deactivateActiveToken(token: Token): EitherResultP<TokenList> {
+  public async deactivateToken(token: Token): EitherResultP<TokenList> {
+    if (!token.isActive) {
+      return Result.error(new CriticalErr(`Token is not active`))
+    }
+
     const result = await token.deactivate()
     if (result.isError()) {
       return Result.error(result.error)

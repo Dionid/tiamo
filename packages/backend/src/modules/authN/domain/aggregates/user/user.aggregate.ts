@@ -72,6 +72,7 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     // . Find email
     const emailIndex = this.state.emailList.findIndex((em) => em.props.value === email)
     const em = this.state.emailList[emailIndex]
+
     // . If no email, than there is a problem
     if (!em) {
       return Result.error(new InvalidDataErr(`There is no email like: ${email}`))
@@ -87,6 +88,7 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     if (approvedEmailRes.isError()) {
       return Result.error(approvedEmailRes.error)
     }
+
     // . Activate email
     const approvedAndActivatedEmailRes = await approvedEmailRes.value.activate()
     if (approvedAndActivatedEmailRes.isError()) {
@@ -99,17 +101,6 @@ export class User extends AggregateRootWithState<UserId, UserState> {
   }
 
   async releaseNewToken(): EitherResultP<Token> {
-    // . Get active token
-    const activeToken = this.state.tokenList.getActiveToken()
-    if (activeToken) {
-      // . Make it deactivated
-      const res = await this.state.tokenList.deactivateActiveToken(activeToken)
-      if (res.isError()) {
-        return Result.error(res.error)
-      }
-      this.state.tokenList = res.value
-    }
-
     // . Create new token
     const newToken = await Token.create({
       createdAt: new Date(),
@@ -139,14 +130,16 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     tempCode: string,
   ): EitherResultP {
     // . Get currently active token
-    const activeToken = this.state.tokenList.getActiveToken()
-    if (!activeToken) {
+    const activeTokens = this.state.tokenList.getActiveTokens()
+    if (!activeTokens) {
       return Result.error(
         new CriticalErr(`There is no active token on user: ${this.id.value}`),
       )
     }
+
     // . Check code
-    if (tempCode !== activeToken.props.tempCode) {
+    const activeToken = activeTokens.filter((t) => t.props.tempCode === tempCode)[0]
+    if (!activeToken) {
       return Result.error(new InvalidDataErr(`Code isn't correct`))
     }
 
@@ -163,8 +156,8 @@ export class User extends AggregateRootWithState<UserId, UserState> {
         sub: this.id.toValue(),
         // TODO. Think where to move this
         "https://hasura.io/jwt/claims": {
-          "x-hasura-allowed-roles": ["user"],
-          "x-hasura-default-role": "user",
+          "x-hasura-allowed-roles": ["user"], // TODO. This must come from authZ
+          "x-hasura-default-role": "user", // TODO. This must come from authZ
           "x-hasura-user-id": this.id.toValue(),
         },
       },
