@@ -9,6 +9,7 @@ import { v4 } from "uuid"
 import { AuthUserModel } from "../../../../../applications/common/adapters/dal/schema/models"
 import { CriticalErr, InvalidDataErr } from "@dddl/core/dist/errors"
 import * as jwt from "jsonwebtoken"
+import { EmailAlreadyApprovedErr } from "./errors"
 
 export type UserState = OmitAndModify<
   AuthUserModel,
@@ -75,6 +76,12 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     if (!em) {
       return Result.error(new InvalidDataErr(`There is no email like: ${email}`))
     }
+
+    // . Check if it is already approved
+    if (em.props.approved) {
+      return Result.error(EmailAlreadyApprovedErr)
+    }
+
     // . Approve email
     const approvedEmailRes = await em.approve()
     if (approvedEmailRes.isError()) {

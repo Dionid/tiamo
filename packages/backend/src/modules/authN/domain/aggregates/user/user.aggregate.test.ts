@@ -4,6 +4,7 @@ import { v4 } from "uuid"
 import { TokenList } from "./token.vo"
 import { Email, EmailStatus } from "./email.vo"
 import exp = require("constants")
+import { EmailAlreadyApprovedErr } from "./errors"
 
 describe("User aggregate", function () {
   describe("createByUser method", function () {
@@ -67,6 +68,34 @@ describe("User aggregate", function () {
         expect(res.value).toBeUndefined()
         expect(user.state.emailList[0].props.approved).toBeTruthy()
         expect(user.state.emailList[0].props.status).toBe(EmailStatus.activated)
+      })
+      it("should reaturn error if email already approved", async function () {
+        const tokenListRes = await TokenList.create([])
+        if (tokenListRes.isError()) {
+          throw tokenListRes.error
+        }
+        const emailRes = await Email.create({
+          value: "test@mail.com",
+          status: EmailStatus.activated,
+          approved: true,
+          token: v4(),
+        })
+        if (emailRes.isError()) {
+          throw emailRes.error
+        }
+        const user = await User.__createByRepository(new UserId(v4()), {
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          lastSeenAt: new Date(),
+          deletedAt: new Date(),
+          tokenList: tokenListRes.value,
+          emailList: [emailRes.value],
+        })
+        const res = await user.approveAndActivateEmail("test@mail.com")
+        if (!res.isError()) {
+          throw new Error(`must be error`)
+        }
+        expect(res.error).toEqual(EmailAlreadyApprovedErr)
       })
     })
   })

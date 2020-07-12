@@ -3,7 +3,7 @@ import { CQBus } from "@dddl/core/dist/cqrs"
 import { RegisterUserPasswordlessCommand } from "../../../../modules/authN/application/commands/register-user-passwordless/command"
 import { UseCaseReqMeta } from "@dddl/core/dist/usecase"
 import { v4 } from "uuid"
-import { ApproveEmailByTokenCommand } from "../../../../modules/authN/application/commands/approve-token/command"
+import { ApproveEmailByTokenCommand } from "../../../../modules/authN/application/commands/approve-email-by-token/command"
 import { RequestPasswordlessCodeByEmailCommand } from "../../../../modules/authN/application/commands/request-passwordless-code-by-email/command"
 import {
   LoginByPasswordlessCodeResponse,
