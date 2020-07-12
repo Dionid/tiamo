@@ -21,7 +21,6 @@ export class LoginByPasswordlessCode
       LoginByPasswordlessCodeCommandResponse
     > {
   constructor(
-    @Inject(EVENT_BUS_DI_TOKEN) private eventBus: EventBus,
     @Inject(USER_REPOSITORY_DI_TOKEN) private userRepo: UserRepository,
     @Inject(JWT_CREATOR_DI_TOKEN) private tokenCreator: JwtTokenCreator,
   ) {}
