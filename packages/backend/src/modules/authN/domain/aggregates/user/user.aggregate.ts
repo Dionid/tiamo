@@ -21,7 +21,7 @@ export type UserState = OmitAndModify<
 >
 
 export class User extends AggregateRootWithState<UserId, UserState> {
-  public static __createByRepository(id: UserId, state: UserState) {
+  public static __createByRepository(id: UserId, state: UserState): User {
     return new User(id, state)
   }
 
