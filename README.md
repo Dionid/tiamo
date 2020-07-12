@@ -1,4 +1,4 @@
-# TIAMO – "True Identity and Access Management Oh yeah"
+# TIAMO – True Identity and Access Management Oh yeah
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://github.com/Dionid/tiamo/blob/master/LICENSE.md)
 
 *Status:* in-development
