@@ -60,6 +60,14 @@ import { LoginByPasswordlessCode } from "../../../modules/authN/application/comm
 import { LoginByPasswordlessCodeCommand } from "../../../modules/authN/application/commands/login-by-passwordless-code/command"
 import * as jwt from "jsonwebtoken"
 import { JWT_CREATOR_DI_TOKEN } from "../../../modules/authN/application/jwtTokenCreator"
+import { AuthClaims } from "./auth-claims"
+import { UserId } from "../../../modules/authN/domain/aggregates/user/user.id"
+import { TokenExpiredError } from "jsonwebtoken"
+import { LogoutCommand } from "../../../modules/authN/application/commands/logout/command"
+import { UseCaseReqMeta } from "@dddl/core/dist/usecase"
+import { UnauthorizedErr } from "@dddl/core/dist/errors"
+import { Logout } from "../../../modules/authN/application/commands/logout"
+import { IsUserAuthTokenJwtTokenNotDeactivated } from "../../common/adapters/dal/token-qo"
 
 interface Config {
   connectionString: string
@@ -206,6 +214,7 @@ async function main() {
   cqBus.subscribe(RequestPasswordlessCodeByEmailCommand, RequestPasswordlessCodeByEmail)
   cqBus.subscribe(SendPasswordlessLoginCodeCommand, SendPasswordlessLoginCode)
   cqBus.subscribe(LoginByPasswordlessCodeCommand, LoginByPasswordlessCode)
+  cqBus.subscribe(LogoutCommand, Logout)
 
   // Orchestration
   initOrchestratorService(syncEventBusProvider, asyncEventBusProvider)
@@ -214,8 +223,47 @@ async function main() {
   const server = new ApolloServer({
     schema,
     context: async ({ req }): Promise<ResolversCtx> => {
+      const headerToken = req.headers.authorization
+      let reqUserId: UserId | undefined
+      let token: string | undefined
+
+      if (headerToken) {
+        token = headerToken.split("Bearer ")[1]
+        try {
+          const decoded = jwt.verify(token, jwtGenSecret) as AuthClaims
+          reqUserId = new UserId(decoded.sub)
+          // . Check token not deactivated
+          const existRes = await new IsUserAuthTokenJwtTokenNotDeactivated(
+            pg,
+            logger,
+          ).handle(token)
+          if (existRes.isError()) {
+            throw existRes.error
+          }
+          if (!existRes.value) {
+            throw new UnauthorizedErr()
+          }
+        } catch (e) {
+          if (e instanceof TokenExpiredError) {
+            const decoded = jwt.verify(token, jwtGenSecret, {
+              ignoreExpiration: true,
+            }) as AuthClaims
+            await cqBus.handle(
+              new LogoutCommand(new UserId(decoded.sub), token),
+              new UseCaseReqMeta({
+                callerId: decoded.sub,
+              }),
+            )
+            throw new UnauthorizedErr()
+          }
+          throw e
+        }
+      }
+
       return {
         cqBus,
+        userId: reqUserId,
+        token,
       }
     },
     introspection: true,

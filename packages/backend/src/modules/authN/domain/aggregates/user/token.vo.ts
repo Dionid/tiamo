@@ -78,6 +78,20 @@ export class TokenList extends ValueObject<Token[]> {
     )
   }
 
+  async deactivateTokenByJWTToken(jwtToken: string): EitherResultP<TokenList> {
+    const tokens = this.getActiveTokens()
+    if (!tokens) {
+      return Result.error(new CriticalErr(`No active tokens`))
+    }
+
+    const token = tokens.find((t) => t.props.jwtToken === jwtToken)
+    if (!token) {
+      return Result.error(new InvalidDataErr(`No AuthToken with JWTToken`))
+    }
+
+    return this.deactivateToken(token)
+  }
+
   public addToken(token: Token): EitherResultP<TokenList> {
     return TokenList.create([...this.props, token])
   }

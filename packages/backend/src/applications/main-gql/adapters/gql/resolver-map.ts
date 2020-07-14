@@ -11,16 +11,17 @@ import {
   MutationLoginByPasswordlessCodeArgs,
   MutationRegisterUserArgs,
   MutationRequestPasswordlessCodeByEmailArgs,
+  MutationResponse,
 } from "./types"
 import { LoginByPasswordlessCodeCommand } from "../../../../modules/authN/application/commands/login-by-passwordless-code/command"
 import { CriticalErr } from "@dddl/core/dist/errors"
+import { LogoutCommand } from "../../../../modules/authN/application/commands/logout/command"
+import { UserId } from "../../../../modules/authN/domain/aggregates/user/user.id"
 
 export interface ResolversCtx {
   cqBus: CQBus
-}
-
-interface Result {
-  success: boolean
+  userId?: UserId
+  token?: string
 }
 
 export const resolvers: IResolvers<any, ResolversCtx> = {
@@ -29,7 +30,7 @@ export const resolvers: IResolvers<any, ResolversCtx> = {
       root,
       { req }: MutationRegisterUserArgs,
       ctx,
-    ): Promise<Result> => {
+    ): Promise<MutationResponse> => {
       if (!req) {
         throw new CriticalErr(`No input`)
       }
@@ -52,7 +53,7 @@ export const resolvers: IResolvers<any, ResolversCtx> = {
       root,
       { req }: MutationApproveEmailByTokenArgs,
       ctx,
-    ): Promise<Result> => {
+    ): Promise<MutationResponse> => {
       if (!req) {
         throw new CriticalErr(`No input`)
       }
@@ -72,7 +73,7 @@ export const resolvers: IResolvers<any, ResolversCtx> = {
       root,
       { req }: MutationRequestPasswordlessCodeByEmailArgs,
       ctx,
-    ): Promise<Result> => {
+    ): Promise<MutationResponse> => {
       if (!req) {
         throw new CriticalErr(`No input`)
       }
@@ -106,6 +107,22 @@ export const resolvers: IResolvers<any, ResolversCtx> = {
       }
       return {
         token: res.value.token,
+      }
+    },
+    logout: async (root, _, ctx): Promise<MutationResponse> => {
+      if (!ctx.userId || !ctx.token) {
+        throw new CriticalErr(`No userID or token while logout`)
+      }
+      const res = await ctx.cqBus.handle(
+        new LogoutCommand(ctx.userId, ctx.token),
+        new UseCaseReqMeta({}),
+      )
+      if (res.isError()) {
+        console.error(res)
+        throw res.error
+      }
+      return {
+        success: true,
       }
     },
   },

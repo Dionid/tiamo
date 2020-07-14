@@ -100,6 +100,15 @@ export class User extends AggregateRootWithState<UserId, UserState> {
     return Result.oku()
   }
 
+  async deactivateAuthTokenByJWTToken(jwtToken: string): EitherResultP {
+    const tokenLRes = await this.state.tokenList.deactivateTokenByJWTToken(jwtToken)
+    if (tokenLRes.isError()) {
+      return Result.error(tokenLRes.error)
+    }
+    this.state.tokenList = tokenLRes.value
+    return Result.oku()
+  }
+
   async releaseNewToken(): EitherResultP<Token> {
     // . Create new token
     const newToken = await Token.create({
