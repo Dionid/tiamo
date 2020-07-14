@@ -52,6 +52,7 @@ export type Mutation = {
   approveEmailByToken?: Maybe<MutationResponse>
   requestPasswordlessCodeByEmail?: Maybe<MutationResponse>
   loginByPasswordlessCode?: Maybe<LoginByPasswordlessCodeResponse>
+  logout?: Maybe<MutationResponse>
 }
 
 export type MutationRegisterUserArgs = {
@@ -240,6 +241,7 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationLoginByPasswordlessCodeArgs, never>
   >
+  logout?: Resolver<Maybe<ResolversTypes["MutationResponse"]>, ParentType, ContextType>
 }
 
 export type Resolvers<ContextType = any> = {

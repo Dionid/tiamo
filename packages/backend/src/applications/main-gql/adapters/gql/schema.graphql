@@ -35,4 +35,5 @@ type Mutation {
     approveEmailByToken(req: ApproveEmailByToken): MutationResponse
     requestPasswordlessCodeByEmail(req: RequestPasswordlessCodeByEmail): MutationResponse
     loginByPasswordlessCode(req: LoginByPasswordlessCode): LoginByPasswordlessCodeResponse
+    logout: MutationResponse
 }
