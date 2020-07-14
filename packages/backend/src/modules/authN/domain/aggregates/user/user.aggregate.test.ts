@@ -183,4 +183,47 @@ describe("User aggregate", function () {
       })
     })
   })
+  describe("deactivateAuthTokenByJWTToken method", function () {
+    it("should deactivate of AuthTokens", async function () {
+      const tempCode = "testtest"
+      const jwtToken = "jwtToken"
+      const tokenRes = await Token.create({
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        tempCode,
+        jwtToken,
+        deactivatedAt: null,
+      })
+      if (tokenRes.isError()) {
+        throw tokenRes.error
+      }
+      const tokenListRes = await TokenList.create([tokenRes.value])
+      if (tokenListRes.isError()) {
+        throw tokenListRes.error
+      }
+      const emailRes = await Email.create({
+        value: "test@mail.com",
+        status: EmailStatus.activating,
+        approved: false,
+        token: v4(),
+      })
+      if (emailRes.isError()) {
+        throw emailRes.error
+      }
+      const user = await User.__createByRepository(new UserId(v4()), {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        lastSeenAt: new Date(),
+        deletedAt: new Date(),
+        tokenList: tokenListRes.value,
+        emailList: [emailRes.value],
+      })
+      const res = await user.deactivateAuthTokenByJWTToken(jwtToken)
+      if (res.isError()) {
+        throw res.error
+      }
+      expect(res.value).toBeUndefined()
+      expect(user.state.tokenList.props[0].props.deactivatedAt !== null).toBeTruthy()
+    })
+  })
 })
