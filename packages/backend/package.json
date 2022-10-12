@@ -61,7 +61,7 @@
     "@dddl/core": "1.2.3",
     "@dddl/knex": "1.2.3",
     "@hapi/joi": "17.1.1",
-    "apollo-server": "2.15.1",
+    "apollo-server": "2.25.4",
     "class-validator": "0.12.2",
     "dotenv": "8.2.0",
     "graphql": "15.3.0",
